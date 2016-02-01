@@ -90,6 +90,7 @@ namespace Polar_Tool
             polarGridGroup.Show();
         }
 
+
         //
         //  File -> Eixt
         //
@@ -168,25 +169,27 @@ namespace Polar_Tool
             // delete the row we just copied the labels from
             dt.Rows.RemoveAt(0);
 
-            // set the heading of the upper left block
-            DataColumn col0 = dt.Columns[0];
-            col0.ColumnName = "TWA/TWS";
-
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
             polarGrid.DataSource = dt;
 
-            // Not the next two things have to be done AFTER the data table is assigned to the Grid View
+            // Note the next actions have to be done AFTER the data table is assigned to the Grid View
             // so the GridView will have the proper dimensions.
 
-            //Copy Row labels from column 0.  The "-1" is because we deleted a row, above.
+            // Copy Row labels from column 0.  The "-1" is because we deleted a row, above.
+            // Note that data tables do not include a row.name attribute, so there is no way to assign it in the data table
+            // The best we can do is assign it in the DGV
             for (rowcount = 0; rowcount < rows-1; rowcount++)
             {
                 polarGrid.Rows[rowcount].HeaderCell.Value = dt.Rows[rowcount][0];
                 polarGrid.Rows[rowcount].Cells[0].Value = "";
             }
 
-            // make the data table columns unsortable.
-            for (colcount = 0; colcount < cols; colcount++)
+            // delete the column we just copied the labels from
+            polarGrid.Columns.RemoveAt(0);
+
+            // make the data table columns unsortable.  be carefule about using the passed column size since we have 
+            // added or deleted columns
+            for (colcount = 0; colcount < polarGrid.Columns.Count; colcount++)
             {
                 polarGrid.Columns[colcount].SortMode = DataGridViewColumnSortMode.NotSortable;
             }

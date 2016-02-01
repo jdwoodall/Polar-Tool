@@ -50,7 +50,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CSVTools">
-      <HintPath>..\..\CSVTools\CSVTools\obj\Debug\CSVTools.dll</HintPath>
+      <HintPath>..\..\..\..\Google Drive\Projects\CSVTools\CSVTools\bin\Debug\CSVTools.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
