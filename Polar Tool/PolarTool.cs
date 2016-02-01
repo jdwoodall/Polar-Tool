@@ -175,19 +175,19 @@ namespace Polar_Tool
             // Note the next actions have to be done AFTER the data table is assigned to the Grid View
             // so the GridView will have the proper dimensions.
 
-            // Copy Row labels from column 0.  The "-1" is because we deleted a row, above.
-            // Note that data tables do not include a row.name attribute, so there is no way to assign it in the data table
+            // Copy Row labels from column 0. 
+            // Note that datatable does not include a row.name attribute, so there is no way to assign it in the data table
             // The best we can do is assign it in the DGV
-            for (rowcount = 0; rowcount < rows-1; rowcount++)
+            for (rowcount = 0; rowcount < polarGrid.Rows.Count; rowcount++)
             {
                 polarGrid.Rows[rowcount].HeaderCell.Value = dt.Rows[rowcount][0];
                 polarGrid.Rows[rowcount].Cells[0].Value = "";
             }
 
-            // delete the column we just copied the labels from
+            // delete the column we just copied the labels from....I have changed this.  
             polarGrid.Columns.RemoveAt(0);
 
-            // make the data table columns unsortable.  be carefule about using the passed column size since we have 
+            // make the data table columns unsortable.  be careful about using the passed column size since we have 
             // added or deleted columns
             for (colcount = 0; colcount < polarGrid.Columns.Count; colcount++)
             {
@@ -221,7 +221,7 @@ namespace Polar_Tool
                 rowstart = 0;
             }
 
-            // clear the chart - this has to be done to re-populate it with other data
+            // clear the chart - this has to be done to repopulate it with other data
             polarChart.Series.Clear();
 
             // declare and allocate the data series.  There is is one for each maximum col of data.
