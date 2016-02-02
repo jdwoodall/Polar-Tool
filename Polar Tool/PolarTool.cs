@@ -64,7 +64,7 @@ namespace Polar_Tool
             string filename;
 
             openFileDialog1.FileName = "*.csv";
-            openFileDialog1.Filter = "CSV files(*.csv)|*.csv|Text files(*.txt)|*.txt| All files(*.*)|*.*";
+            openFileDialog1.Filter = "CSV files(*.csv)|*.csv|Text files(*.txt)|*.txt|All files(*.*)|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -79,6 +79,7 @@ namespace Polar_Tool
             }
 
             // this will read the CSV file into a two dimensional array
+            polardata.Initialize();
             polardata = csvt.CSVRead(filename, NumRows, NumCols);
 
             // build the Grid and Polar Charts
@@ -108,13 +109,15 @@ namespace Polar_Tool
         private void buildGrid(string[,] polardata, int rows, int cols)
         {
             int rowstart;
-            int rowcount, colcount;
-            DataTable dt = new DataTable();
-            double dnumber;
+            int rowcount, colcount;            double dnumber;
             int inumber;
+            DataTable dt = new DataTable();
 
-            // Check to see if the first rwo actually contains data.  I may be comments.
-            // The first token is allowed to be text, usually TWS/TWA, but the rest needs to be numbers
+            //  Should not need this.
+            dt.Clear();
+
+            // Check to see if the first rwo actually contains data.  It may be comments.
+            // The first token is allowed to be text, usually TWS/TWA, but the rest should be numbers
             rowstart = 0;
             for (colcount = 1; colcount < cols; colcount++)
             {
@@ -125,7 +128,7 @@ namespace Polar_Tool
             }
 
             // We use a DataTable to populate the DataGrid, so build the table
-            // create columns
+            // Firts, create columns.
             for (colcount = 0; colcount < cols; colcount++)
             {
                 dt.Columns.Add();
@@ -170,6 +173,9 @@ namespace Polar_Tool
             // delete the row we just copied the labels from
             dt.Rows.RemoveAt(0);
 
+            // sort the columns by column name
+
+
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
             polarGrid.DataSource = dt;
 
@@ -197,6 +203,9 @@ namespace Polar_Tool
 
             // make the column headers visible
             polarGrid.ColumnHeadersVisible = true;
+
+            // done with the data table.
+            dt.Dispose();
         }
 
 
