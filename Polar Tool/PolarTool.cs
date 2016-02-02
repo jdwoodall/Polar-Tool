@@ -110,7 +110,6 @@ namespace Polar_Tool
             int rowstart;
             int rowcount, colcount;
             DataTable dt = new DataTable();
-            Boolean ignoreFirstRow = false;
             double dnumber;
             int inumber;
 
@@ -161,11 +160,11 @@ namespace Polar_Tool
             }
 
             // Copy the column labels from the first row to the column labels
+            // Note that the datatable always starts at 0.  If we ignored the first 
+            // row of polardata, it is not included in DT.
             for (colcount = 0; colcount < cols; colcount++)
             {
-                //DataColumn col = dt.Columns[colcount]
-                //col.ColumnName = dt.Rows[rowstart][colcount].ToString();
-                dt.Columns[colcount].ColumnName = dt.Rows[rowstart][colcount].ToString();
+                dt.Columns[colcount].ColumnName = dt.Rows[0][colcount].ToString();
             }
 
             // delete the row we just copied the labels from
@@ -213,14 +212,15 @@ namespace Polar_Tool
             double theta;
             double r;
 
-            // allows to skip first row which is often comments -- TODO get rid of this
-            if (ignoreFirstRow)
+            // Check to see if the first row actually contains data.  I may be comments.
+            // The first token is allowed to be text, usually TWA/TWS, but the rest needs to be numbers
+            rowstart = 0;
+            for (colcount = 1; colcount < cols; colcount++)
             {
-                rowstart = 1;
-            }
-            else
-            {
-                rowstart = 0;
+                if (polardata[0, colcount] == null)
+                {
+                    rowstart = 1;
+                }
             }
 
             // clear the chart - this has to be done to repopulate it with other data
@@ -242,7 +242,7 @@ namespace Polar_Tool
                 // add a series to the polar chart.  The first row in each column is the is the wind speed.
                 // Console.WriteLine("Series added: " + polardata[0, colcount]);
 
-                polarSeries[colcount - 1] = polarChart.Series.Add(polardata[0, colcount]);
+                polarSeries[colcount - 1] = polarChart.Series.Add(polardata[rowstart, colcount]);
                 polarSeries[colcount-1].ChartType = SeriesChartType.Polar;
 
                 //  Add the data points.  The series is added as an XY pair where X = the angle and Y = the boat speed
