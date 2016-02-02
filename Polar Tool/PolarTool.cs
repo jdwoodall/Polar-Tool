@@ -114,23 +114,24 @@ namespace Polar_Tool
             double dnumber;
             int inumber;
 
+            // Check to see if the first rwo actually contains data.  I may be comments.
+            // The first token is allowed to be text, usually TWS/TWA, but the rest needs to be numbers
+            rowstart = 0;
+            for (colcount = 1; colcount < cols; colcount++)
+            {
+                if ( polardata[0, colcount] == null ) 
+                {
+                    rowstart = 1;
+                }
+            }
+
             // We use a DataTable to populate the DataGrid, so build the table
             // create columns
             for (colcount = 0; colcount < cols; colcount++)
             {
                 dt.Columns.Add();
             }
-
-            // allows to skip first row which is often comments --  Needs to be fixed
-            if (ignoreFirstRow)
-            {
-                rowstart = 1;
-            }
-            else
-            {
-                rowstart = 0;
-            }
-
+            
             // copy the data from the polardata array in to the data table, row by row
             for (rowcount = rowstart; rowcount < rows; rowcount++)
             {
@@ -162,8 +163,9 @@ namespace Polar_Tool
             // Copy the column labels from the first row to the column labels
             for (colcount = 0; colcount < cols; colcount++)
             {
-                DataColumn col = dt.Columns[colcount];
-                col.ColumnName = dt.Rows[rowstart][colcount].ToString();
+                //DataColumn col = dt.Columns[colcount]
+                //col.ColumnName = dt.Rows[rowstart][colcount].ToString();
+                dt.Columns[colcount].ColumnName = dt.Rows[rowstart][colcount].ToString();
             }
 
             // delete the row we just copied the labels from
