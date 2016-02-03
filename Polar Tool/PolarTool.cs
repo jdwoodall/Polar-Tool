@@ -140,11 +140,21 @@ namespace Polar_Tool
 
 
             // We use a DataTable to populate the DataGrid, so build the table
-            // Firts, create columns.
+            // First, create columns.
+
             for (colcount = 0; colcount < cols; colcount++)
             {
+                DataColumn dataColumn = new DataColumn();
+                using (dataColumn)
+                {
+                    dataColumn.Caption = polardata[rowstart, colcount];
+                    dataColumn.ColumnName = polardata[rowstart, colcount];
+                    dataColumn.ReadOnly = true;
+                    Console.WriteLine("Column " + dataColumn.Ordinal + " created with name:" + dataColumn.ColumnName);
+                }
                 // add the column including its name
-                dt.Columns.Add(polardata[rowstart, colcount]);
+                // dataColumn = dt.Columns.Add(polardata[rowstart, colcount]);
+                dt.Columns.Add(dataColumn);
             }
             
             // copy the data from the polardata array in to the data table, row by row
