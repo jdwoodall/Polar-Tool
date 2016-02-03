@@ -112,15 +112,19 @@ namespace Polar_Tool
             int rowcount, colcount;
             double dnumber;
             int inumber;
+            DataColumn tcol;
 
-            // Use a DataTable to hold the data and assign it to GDV
+            // Use a DataTable to hold the data and assign it to DGV
             DataTable dt = new DataTable();
 
-            //  Should not need this.
-            dt.Clear();
+            //  Unassign the display grid from the datasource while we build it.
+            //  This eliminates reuse problems with columns not being in the correct order.
+            polarGrid.DataSource = null;
+
+            // reset and clear the datatable
             dt.Reset();
 
-            // Check to see if the first rwo actually contains data.  It may be comments.
+            // Check to see if the first row actually contains data.  It may be comments.
             // The first token is allowed to be text, usually TWS/TWA, but the rest should be numbers
             rowstart = 0;
             for (colcount = 1; colcount < cols; colcount++)
@@ -131,32 +135,31 @@ namespace Polar_Tool
                 }
             }
 
-
-            // 
-            //  The reuse issue appears to be a DisplayInex isse or a sorting issue
-            //
-
-
-
-
             // We use a DataTable to populate the DataGrid, so build the table
             // First, create columns.
 
             for (colcount = 0; colcount < cols; colcount++)
             {
-                DataColumn dataColumn = new DataColumn();
-                using (dataColumn)
-                {
-                    dataColumn.Caption = polardata[rowstart, colcount];
-                    dataColumn.ColumnName = polardata[rowstart, colcount];
-                    dataColumn.ReadOnly = true;
-                    Console.WriteLine("Column " + dataColumn.Ordinal + " created with name:" + dataColumn.ColumnName);
-                }
                 // add the column including its name
-                // dataColumn = dt.Columns.Add(polardata[rowstart, colcount]);
-                dt.Columns.Add(dataColumn);
+                tcol = dt.Columns.Add(polardata[rowstart, colcount]);
+                tcol.SetOrdinal(colcount);
+
+                // the first row may have an extra token or more as a label.  these need to be skipped.
+
+                int result;
+                int offset;
+
+                offset = 0;
+                while (!int.TryParse(polardata[rowstart, colcount + offset], out result))
+                {
+                    offset++;
+                }
+     
+                tcol.Caption = polardata[rowstart, colcount+offset];
+                tcol.ColumnName = polardata[rowstart, colcount+offset];
+                dt.Columns[colcount].SetOrdinal(colcount);
             }
-            
+     
             // copy the data from the polardata array in to the data table, row by row
             for (rowcount = rowstart; rowcount < rows; rowcount++)
             {
@@ -180,12 +183,11 @@ namespace Polar_Tool
                         row[colcount] = polardata[rowcount, colcount];
                     }
                 }
-
                 // add the current row to the DataTable
                 dt.Rows.Add(row);
             }
 
-            // delete the row we just copied the labels from
+            // Remove row 0 as it was used for the labels/captions of the column headers
             dt.Rows.RemoveAt(0);
 
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
@@ -203,7 +205,7 @@ namespace Polar_Tool
                 polarGrid.Rows[rowcount].Cells[0].Value = "";
             }
 
-            // delete the column we just copied the labels from....I have changed this.  
+            // delete the column we just copied the row labels from.
             polarGrid.Columns.RemoveAt(0);
 
             // make the data table columns unsortable.  be careful about using the passed column size since we have 
