@@ -132,6 +132,7 @@ namespace Polar_Tool
             for (colcount = 0; colcount < cols; colcount++)
             {
                 dt.Columns.Add();
+                // add the column name
                 dt.Columns.Add(polardata[rowstart, colcount]);
             }
             
@@ -168,11 +169,11 @@ namespace Polar_Tool
             // row of polardata, it is not included in DT.
             for (colcount = 0; colcount < cols; colcount++)
             {
-                dt.Columns[colcount].ColumnName = dt.Rows[0][colcount].ToString();
+  //              dt.Columns[colcount].ColumnName = dt.Rows[0][colcount].ToString();
             }
 
             // delete the row we just copied the labels from
-            dt.Rows.RemoveAt(0);
+  //          dt.Rows.RemoveAt(0);
 
             // sort the columns by column name
 
