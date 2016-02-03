@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Data;
-using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using System.Globalization;
 
 namespace Polar_Tool
 {
@@ -142,24 +140,8 @@ namespace Polar_Tool
             {
                 // add the column including its name
                 tcol = dt.Columns.Add(polardata[rowstart, colcount]);
-                tcol.SetOrdinal(colcount);
-
-                // the first row may have an extra token or more as a label.  these need to be skipped.
-
-                int result;
-                int offset;
-
-                offset = 0;
-                while (!int.TryParse(polardata[rowstart, colcount + offset], out result))
-                {
-                    offset++;
-                }
-     
-                tcol.Caption = polardata[rowstart, colcount+offset];
-                tcol.ColumnName = polardata[rowstart, colcount+offset];
-                dt.Columns[colcount].SetOrdinal(colcount);
             }
-     
+  
             // copy the data from the polardata array in to the data table, row by row
             for (rowcount = rowstart; rowcount < rows; rowcount++)
             {
@@ -231,7 +213,6 @@ namespace Polar_Tool
         {
             int rowstart;
             int rowcount, colcount;
-            Boolean ignoreFirstRow = false;
             double theta;
             double r;
 
@@ -271,13 +252,20 @@ namespace Polar_Tool
                 //  Add the data points.  The series is added as an XY pair where X = the angle and Y = the boat speed
                 for (rowcount = rowstart + 1; rowcount < rows; rowcount++)
                 {
-//                    Console.Write("Row: " + rowcount + ". Column: " + colcount + ". Data: " + polardata[0, colcount]);
+                    //Console.WriteLine("Row: " + rowcount + ". Column: " + colcount + ". Data: " + polardata[rowcount, colcount]);
 
                     // explicitly convert the strings to double
                     theta = Convert.ToDouble(polardata[rowcount, 0]);
-                    r = Convert.ToDouble(polardata[rowcount, colcount]);
-
-                    polarSeries[colcount - 1].Points.AddXY(theta, r);
+                    try
+                    {
+                        r = Convert.ToDouble(polardata[rowcount, colcount]);
+                        polarSeries[colcount - 1].Points.AddXY(theta, r);
+                    }
+                    catch (Exception)
+                    {
+                        // if the conversion failed it is likely a trailing space or tab so ignore it
+                        // note that this never happen if the csv tool is properly filtering whitespace
+                    }
 //                    Console.WriteLine("Data added: " + theta + ", " + r);
 //                    Console.WriteLine("Series Data: " + polarSeries[colcount-1].Points[rowcount-rowstart-1].XValue + ", " + polarSeries[colcount-1].Points[rowcount-rowstart-1].YValues[0]);
                 }
