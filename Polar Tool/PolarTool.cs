@@ -132,6 +132,7 @@ namespace Polar_Tool
             for (colcount = 0; colcount < cols; colcount++)
             {
                 dt.Columns.Add();
+                dt.Columns.Add(polardata[rowstart, colcount]);
             }
             
             // copy the data from the polardata array in to the data table, row by row
