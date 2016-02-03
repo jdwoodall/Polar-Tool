@@ -109,12 +109,16 @@ namespace Polar_Tool
         private void buildGrid(string[,] polardata, int rows, int cols)
         {
             int rowstart;
-            int rowcount, colcount;            double dnumber;
+            int rowcount, colcount;
+            double dnumber;
             int inumber;
+
+            // Use a DataTable to hold the data and assign it to GDV
             DataTable dt = new DataTable();
 
             //  Should not need this.
             dt.Clear();
+            dt.Reset();
 
             // Check to see if the first rwo actually contains data.  It may be comments.
             // The first token is allowed to be text, usually TWS/TWA, but the rest should be numbers
@@ -127,12 +131,19 @@ namespace Polar_Tool
                 }
             }
 
+
+            // 
+            //  The reuse issue appears to be a DisplayInex isse or a sorting issue
+            //
+
+
+
+
             // We use a DataTable to populate the DataGrid, so build the table
             // Firts, create columns.
             for (colcount = 0; colcount < cols; colcount++)
             {
-                dt.Columns.Add();
-                // add the column name
+                // add the column including its name
                 dt.Columns.Add(polardata[rowstart, colcount]);
             }
             
@@ -164,19 +175,8 @@ namespace Polar_Tool
                 dt.Rows.Add(row);
             }
 
-            // Copy the column labels from the first row to the column labels
-            // Note that the datatable always starts at 0.  If we ignored the first 
-            // row of polardata, it is not included in DT.
-            for (colcount = 0; colcount < cols; colcount++)
-            {
-  //              dt.Columns[colcount].ColumnName = dt.Rows[0][colcount].ToString();
-            }
-
             // delete the row we just copied the labels from
-  //          dt.Rows.RemoveAt(0);
-
-            // sort the columns by column name
-
+            dt.Rows.RemoveAt(0);
 
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
             polarGrid.DataSource = dt;
