@@ -98,7 +98,23 @@ namespace Polar_Tool
             Close();
         }
 
-
+        int firstvalidrow(string[,] data, int cols)
+        {
+            int colcount;
+            int rowstart;
+                
+            rowstart = 0;
+            for (colcount = 1; colcount < cols; colcount++)
+            {
+                if (data[0, colcount] == null || data[0,colcount] == "")
+                {
+                    rowstart = 1;
+                }
+            }
+            return rowstart;
+        }
+ 
+        
         //
         // Copies the data in the array polardata into a data table and assigns
         // it to a DataGridView
@@ -122,16 +138,8 @@ namespace Polar_Tool
             // reset and clear the datatable
             dt.Reset();
 
-            // Check to see if the first row actually contains data.  It may be comments.
-            // The first token is allowed to be text, usually TWS/TWA, but the rest should be numbers
-            rowstart = 0;
-            for (colcount = 1; colcount < cols; colcount++)
-            {
-                if ( polardata[0, colcount] == null ) 
-                {
-                    rowstart = 1;
-                }
-            }
+            // get the first valid row
+            rowstart = firstvalidrow(polardata, cols);
 
             // We use a DataTable to populate the DataGrid, so build the table
             // First, create columns.
@@ -205,7 +213,6 @@ namespace Polar_Tool
         }
 
 
-
         //
         //  Build the polar chart
         //
@@ -216,16 +223,8 @@ namespace Polar_Tool
             double theta;
             double r;
 
-            // Check to see if the first row actually contains data.  I may be comments.
-            // The first token is allowed to be text, usually TWA/TWS, but the rest needs to be numbers
-            rowstart = 0;
-            for (colcount = 1; colcount < cols; colcount++)
-            {
-                if (polardata[0, colcount] == null)
-                {
-                    rowstart = 1;
-                }
-            }
+            // get the first valid row
+            rowstart = firstvalidrow(polardata, cols);
 
             // clear the chart - this has to be done to repopulate it with other data
             polarChart.Series.Clear();
@@ -273,9 +272,50 @@ namespace Polar_Tool
         }
 
 
-        // show a line of the polardata as series fit to a spline graph
+        // show a column of the polardata as series fit to a spline graph
         private void btnGraphLine_Click(object sender, EventArgs e)
         {
+            int firstrow;
+            int numrows;
+            int numcols;
+            int displaycolumn;
+
+            numrows = csvt.actRows;
+            numcols = csvt.actCols;
+
+            // clear the current chart
+            chartColGraph.Series.Clear();
+
+            // declare and allocate the data series.  There is is one for each maximum col of data.
+            Series lineSeries;
+            lineSeries = new Series();
+
+
+            // Find the column name.  It should never be the first column.
+            firstrow = firstvalidrow(polardata, csvt.actCols);
+
+            // default to first column
+            displaycolumn = 1;
+
+            // find column user requested
+            for (int colcount = 1; colcount < numcols; colcount++)
+            {
+                if (polardata[firstrow, colcount] == txtGraphCol.Text)
+                {
+                    displaycolumn = colcount;
+                    break;
+                }
+            }
+
+            // set the chart type to spline
+            lineSeries =  chartColGraph.Series.Add(polardata[firstrow, displaycolumn]);
+            lineSeries.ChartType = SeriesChartType.Spline;
+
+            // add data from polardata.  The first row are headings and need to be skipped.
+            for (int rowcount = firstrow+1; rowcount < numrows; rowcount++)
+            {
+                lineSeries.Points.AddXY(Convert.ToDouble(polardata[rowcount, 0]), Convert.ToDouble(polardata[rowcount, displaycolumn]));
+            }
         }
     }
 }

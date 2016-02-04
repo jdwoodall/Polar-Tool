@@ -28,15 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.polarChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.polarGrid = new System.Windows.Forms.DataGridView();
@@ -50,9 +50,9 @@
             this.viewStripPolarGraph = new System.Windows.Forms.ToolStripMenuItem();
             this.viewStripPolarTable = new System.Windows.Forms.ToolStripMenuItem();
             this.polarGridGroup = new System.Windows.Forms.GroupBox();
-            this.btnGraphLine = new System.Windows.Forms.Button();
-            this.txtGraphCol = new System.Windows.Forms.TextBox();
             this.chartColGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.txtGraphCol = new System.Windows.Forms.TextBox();
+            this.btnGraphLine = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.polarChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.polarGrid)).BeginInit();
             this.polarMenuStrip.SuspendLayout();
@@ -63,16 +63,16 @@
             // polarChart
             // 
             this.polarChart.Anchor = System.Windows.Forms.AnchorStyles.None;
-            chartArea3.Name = "ChartArea1";
-            this.polarChart.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.polarChart.Legends.Add(legend3);
+            chartArea1.Name = "ChartArea1";
+            this.polarChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.polarChart.Legends.Add(legend1);
             this.polarChart.Location = new System.Drawing.Point(0, 27);
             this.polarChart.Name = "polarChart";
             this.polarChart.Size = new System.Drawing.Size(1002, 510);
             this.polarChart.TabIndex = 3;
-            title2.Name = "Polar Graph";
-            this.polarChart.Titles.Add(title2);
+            title1.Name = "Polar Graph";
+            this.polarChart.Titles.Add(title1);
             // 
             // openFileDialog1
             // 
@@ -88,57 +88,57 @@
             this.polarGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.polarGrid.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.polarGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.Format = "N1";
-            dataGridViewCellStyle5.NullValue = "0";
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.MenuText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.polarGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.Format = "N1";
-            dataGridViewCellStyle6.NullValue = "0";
-            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.polarGrid.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.Format = "N1";
+            dataGridViewCellStyle1.NullValue = "0";
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.MenuText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.polarGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.Format = "N1";
+            dataGridViewCellStyle2.NullValue = "0";
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.polarGrid.DefaultCellStyle = dataGridViewCellStyle2;
             this.polarGrid.Location = new System.Drawing.Point(0, 19);
             this.polarGrid.Name = "polarGrid";
             this.polarGrid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.Format = "N1";
-            dataGridViewCellStyle7.NullValue = "0";
-            dataGridViewCellStyle7.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.polarGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.Format = "N1";
+            dataGridViewCellStyle3.NullValue = "0";
+            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.polarGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.polarGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.MenuText;
-            dataGridViewCellStyle8.Format = "N1";
-            dataGridViewCellStyle8.NullValue = "0";
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.MenuText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.polarGrid.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.MenuText;
+            dataGridViewCellStyle4.Format = "N1";
+            dataGridViewCellStyle4.NullValue = "0";
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.MenuText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.polarGrid.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.polarGrid.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.polarGrid.RowTemplate.DefaultCellStyle.Format = "N1";
             this.polarGrid.RowTemplate.DefaultCellStyle.NullValue = "0";
             this.polarGrid.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.polarGrid.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.polarGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.polarGrid.Size = new System.Drawing.Size(1002, 449);
+            this.polarGrid.Size = new System.Drawing.Size(772, 449);
             this.polarGrid.TabIndex = 4;
             // 
             // polarMenuStrip
@@ -230,6 +230,28 @@
             this.polarGridGroup.TabStop = false;
             this.polarGridGroup.Text = "Polar TWA/TWS";
             // 
+            // chartColGraph
+            // 
+            this.chartColGraph.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            chartArea2.AxisX.Maximum = 180D;
+            chartArea2.AxisX.Minimum = 0D;
+            chartArea2.Name = "ChartArea1";
+            this.chartColGraph.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chartColGraph.Legends.Add(legend2);
+            this.chartColGraph.Location = new System.Drawing.Point(770, 19);
+            this.chartColGraph.Name = "chartColGraph";
+            this.chartColGraph.Size = new System.Drawing.Size(232, 449);
+            this.chartColGraph.TabIndex = 7;
+            this.chartColGraph.Text = "chart1";
+            // 
+            // txtGraphCol
+            // 
+            this.txtGraphCol.Location = new System.Drawing.Point(136, 482);
+            this.txtGraphCol.Name = "txtGraphCol";
+            this.txtGraphCol.Size = new System.Drawing.Size(100, 20);
+            this.txtGraphCol.TabIndex = 6;
+            // 
             // btnGraphLine
             // 
             this.btnGraphLine.Location = new System.Drawing.Point(36, 479);
@@ -239,25 +261,6 @@
             this.btnGraphLine.Text = "Graph Column";
             this.btnGraphLine.UseVisualStyleBackColor = true;
             this.btnGraphLine.Click += new System.EventHandler(this.btnGraphLine_Click);
-            // 
-            // txtGraphCol
-            // 
-            this.txtGraphCol.Location = new System.Drawing.Point(136, 482);
-            this.txtGraphCol.Name = "txtGraphCol";
-            this.txtGraphCol.Size = new System.Drawing.Size(100, 20);
-            this.txtGraphCol.TabIndex = 6;
-            // 
-            // chartColGraph
-            // 
-            chartArea4.Name = "ChartArea1";
-            this.chartColGraph.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.chartColGraph.Legends.Add(legend4);
-            this.chartColGraph.Location = new System.Drawing.Point(677, 264);
-            this.chartColGraph.Name = "chartColGraph";
-            this.chartColGraph.Size = new System.Drawing.Size(325, 204);
-            this.chartColGraph.TabIndex = 7;
-            this.chartColGraph.Text = "chart1";
             // 
             // formMain
             // 
