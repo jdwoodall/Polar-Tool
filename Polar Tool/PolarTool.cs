@@ -271,5 +271,11 @@ namespace Polar_Tool
                 }
             }
         }
+
+
+        // show a line of the polardata as series fit to a spline graph
+        private void btnGraphLine_Click(object sender, EventArgs e)
+        {
+        }
     }
 }
