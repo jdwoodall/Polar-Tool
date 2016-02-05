@@ -355,7 +355,7 @@ namespace Polar_Tool
             chartColGraph.Series.Add(lineSeries);
         }
 
-        private void SwapXY(object lineSeries)
+        private void SwapXY(Series lineSeries)
         {
             // throw new NotImplementedException();
         }
