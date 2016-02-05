@@ -350,7 +350,14 @@ namespace Polar_Tool
             lineSeries = polarChart.Series[e.ColumnIndex];
             lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
             lineSeries.ChartType = SeriesChartType.Spline;
+
+            SwapXY(lineSeries);
             chartColGraph.Series.Add(lineSeries);
+        }
+
+        private void SwapXY(object lineSeries)
+        {
+            // throw new NotImplementedException();
         }
     }
 }
