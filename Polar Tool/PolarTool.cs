@@ -142,12 +142,30 @@ namespace Polar_Tool
             rowstart = firstvalidrow(polardata, cols);
 
             // We use a DataTable to populate the DataGrid, so build the table
-            // First, create columns.
 
+            // Create columns
             for (colcount = 0; colcount < cols; colcount++)
             {
                 // add the column including its name
-                tcol = dt.Columns.Add(polardata[rowstart, colcount]);
+                // the name should be a number except for possibly the [0,0] location
+                try
+                {
+                    dnumber = Convert.ToDouble(polardata[rowstart, colcount]);
+                    tcol = dt.Columns.Add(polardata[rowstart, colcount]);
+                }
+                catch (Exception)
+                {
+                    // value is not a valid number
+                    if (colcount == 0)
+                    {
+                        tcol = dt.Columns.Add(polardata[rowstart, colcount]);
+                    }
+                    else
+                    {
+                        tcol = dt.Columns.Add(polardata[rowstart, colcount+1]);
+                    }
+                }
+
             }
   
             // copy the data from the polardata array in to the data table, row by row
@@ -284,15 +302,15 @@ namespace Polar_Tool
             numcols = csvt.actCols;
 
             // clear the current chart
+            chartColGraph.DataSource = null;
             chartColGraph.Series.Clear();
 
             // declare and allocate the data series.  There is is one for each maximum col of data.
             Series lineSeries;
             lineSeries = new Series();
 
-
             // Find the column name.  It should never be the first column.
-            firstrow = firstvalidrow(polardata, csvt.actCols);
+            firstrow = firstvalidrow(polardata, numcols);
 
             // default to first column
             displaycolumn = 1;
@@ -308,14 +326,31 @@ namespace Polar_Tool
             }
 
             // set the chart type to spline
-            lineSeries =  chartColGraph.Series.Add(polardata[firstrow, displaycolumn]);
+            lineSeries = chartColGraph.Series.Add(polardata[firstrow, displaycolumn]);
             lineSeries.ChartType = SeriesChartType.Spline;
 
             // add data from polardata.  The first row are headings and need to be skipped.
             for (int rowcount = firstrow+1; rowcount < numrows; rowcount++)
             {
-                lineSeries.Points.AddXY(Convert.ToDouble(polardata[rowcount, 0]), Convert.ToDouble(polardata[rowcount, displaycolumn]));
+                lineSeries.Points.AddXY(Convert.ToDouble(polardata[rowcount, displaycolumn]), Convert.ToDouble(polardata[rowcount, 0]));
             }
+        }
+
+        private void polarGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            // declare and allocate the data series.  There is is one for each maximum col of data.
+            Series lineSeries;
+            lineSeries = new Series();
+
+            // clear the current data series
+            chartColGraph.Series.Clear();
+            chartColGraph.DataSource = null;
+
+            lineSeries = polarChart.Series[e.ColumnIndex];
+            lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
+            lineSeries.ChartType = SeriesChartType.Spline;
+            chartColGraph.Series.Add(lineSeries);
         }
     }
 }
