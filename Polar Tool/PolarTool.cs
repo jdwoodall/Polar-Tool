@@ -342,6 +342,7 @@ namespace Polar_Tool
             // declare and allocate the data series.  There is is one for each maximum col of data.
             Series lineSeries;
             lineSeries = new Series();
+            lineSeries.Points.Clear();
 
             // clear the current data series
             chartColGraph.Series.Clear();
@@ -352,12 +353,32 @@ namespace Polar_Tool
             lineSeries.ChartType = SeriesChartType.Spline;
 
             SwapXY(lineSeries);
+            PrintSeries(lineSeries);
             chartColGraph.Series.Add(lineSeries);
         }
 
-        private void SwapXY(Series lineSeries)
+        private void PrintSeries(Series s)
         {
-            // throw new NotImplementedException();
+            Console.WriteLine("Series " + s.Name);
+            for (int i = 0; i < s.Points.Count; i++)
+            {
+                Console.WriteLine("Point " + i + " : x=" + s.Points[i].XValue + ". y=" + s.Points[i].YValues[0]);
+            }
+        }
+
+        private void SwapXY(Series s)
+        {
+            DataPoint tp;
+            double t;
+
+            for (int i = 0; i < s.Points.Count; i++)
+            {
+                tp = s.Points[i];
+                t = tp.XValue;
+                tp.XValue = tp.YValues[0];
+                tp.YValues[0] = t;
+                s.Points[i] = tp;
+            }
         }
     }
 }

@@ -168,20 +168,20 @@
             // fileStripOpen
             // 
             this.fileStripOpen.Name = "fileStripOpen";
-            this.fileStripOpen.Size = new System.Drawing.Size(103, 22);
+            this.fileStripOpen.Size = new System.Drawing.Size(152, 22);
             this.fileStripOpen.Text = "Open";
             this.fileStripOpen.Click += new System.EventHandler(this.fileStripOpen_Click);
             // 
             // fileStripSave
             // 
             this.fileStripSave.Name = "fileStripSave";
-            this.fileStripSave.Size = new System.Drawing.Size(103, 22);
+            this.fileStripSave.Size = new System.Drawing.Size(152, 22);
             this.fileStripSave.Text = "Save";
             // 
             // fileStripExit
             // 
             this.fileStripExit.Name = "fileStripExit";
-            this.fileStripExit.Size = new System.Drawing.Size(103, 22);
+            this.fileStripExit.Size = new System.Drawing.Size(152, 22);
             this.fileStripExit.Text = "Exit";
             this.fileStripExit.Click += new System.EventHandler(this.fileStripExit_Click);
             // 
@@ -237,9 +237,9 @@
             this.chartColGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chartColGraph.BorderSkin.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chartColGraph.BorderSkin.BorderWidth = 2;
-            chartArea2.AxisX.Maximum = 180D;
             chartArea2.AxisX.Minimum = 0D;
-            chartArea2.AxisY.Crossing = -1.7976931348623157E+308D;
+            chartArea2.AxisY.IsReversed = true;
+            chartArea2.AxisY.Maximum = 180D;
             chartArea2.AxisY.Minimum = 0D;
             chartArea2.BorderColor = System.Drawing.Color.Transparent;
             chartArea2.Name = "ChartArea1";
