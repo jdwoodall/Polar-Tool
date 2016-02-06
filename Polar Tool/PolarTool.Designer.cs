@@ -66,7 +66,7 @@
             this.polarChart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.polarChart.Legends.Add(legend1);
-            this.polarChart.Location = new System.Drawing.Point(0, 27);
+            this.polarChart.Location = new System.Drawing.Point(28, 27);
             this.polarChart.Name = "polarChart";
             this.polarChart.Size = new System.Drawing.Size(1002, 510);
             this.polarChart.TabIndex = 3;
@@ -137,9 +137,11 @@
             this.polarGrid.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.polarGrid.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.polarGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.polarGrid.Size = new System.Drawing.Size(772, 449);
+            this.polarGrid.Size = new System.Drawing.Size(821, 449);
             this.polarGrid.TabIndex = 4;
             this.polarGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
+            this.polarGrid.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
+            this.polarGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
             // 
             // polarMenuStrip
             // 
@@ -150,7 +152,7 @@
             this.viewToolStrip});
             this.polarMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.polarMenuStrip.Name = "polarMenuStrip";
-            this.polarMenuStrip.Size = new System.Drawing.Size(1002, 24);
+            this.polarMenuStrip.Size = new System.Drawing.Size(1059, 24);
             this.polarMenuStrip.TabIndex = 2;
             this.polarMenuStrip.Text = "polarMenuStrip";
             // 
@@ -168,20 +170,20 @@
             // fileStripOpen
             // 
             this.fileStripOpen.Name = "fileStripOpen";
-            this.fileStripOpen.Size = new System.Drawing.Size(152, 22);
+            this.fileStripOpen.Size = new System.Drawing.Size(103, 22);
             this.fileStripOpen.Text = "Open";
             this.fileStripOpen.Click += new System.EventHandler(this.fileStripOpen_Click);
             // 
             // fileStripSave
             // 
             this.fileStripSave.Name = "fileStripSave";
-            this.fileStripSave.Size = new System.Drawing.Size(152, 22);
+            this.fileStripSave.Size = new System.Drawing.Size(103, 22);
             this.fileStripSave.Text = "Save";
             // 
             // fileStripExit
             // 
             this.fileStripExit.Name = "fileStripExit";
-            this.fileStripExit.Size = new System.Drawing.Size(152, 22);
+            this.fileStripExit.Size = new System.Drawing.Size(103, 22);
             this.fileStripExit.Text = "Exit";
             this.fileStripExit.Click += new System.EventHandler(this.fileStripExit_Click);
             // 
@@ -225,7 +227,7 @@
             this.polarGridGroup.Controls.Add(this.polarGrid);
             this.polarGridGroup.Location = new System.Drawing.Point(0, 27);
             this.polarGridGroup.Name = "polarGridGroup";
-            this.polarGridGroup.Size = new System.Drawing.Size(1002, 510);
+            this.polarGridGroup.Size = new System.Drawing.Size(1059, 510);
             this.polarGridGroup.TabIndex = 5;
             this.polarGridGroup.TabStop = false;
             this.polarGridGroup.Text = "Polar TWA/TWS";
@@ -244,7 +246,7 @@
             chartArea2.BorderColor = System.Drawing.Color.Transparent;
             chartArea2.Name = "ChartArea1";
             this.chartColGraph.ChartAreas.Add(chartArea2);
-            this.chartColGraph.Location = new System.Drawing.Point(770, 19);
+            this.chartColGraph.Location = new System.Drawing.Point(827, 19);
             this.chartColGraph.Name = "chartColGraph";
             this.chartColGraph.Size = new System.Drawing.Size(232, 449);
             this.chartColGraph.TabIndex = 7;
@@ -271,7 +273,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1002, 537);
+            this.ClientSize = new System.Drawing.Size(1059, 537);
             this.Controls.Add(this.polarGridGroup);
             this.Controls.Add(this.polarMenuStrip);
             this.Controls.Add(this.polarChart);
@@ -320,6 +322,9 @@
         //Edit menu
         //
         private System.Windows.Forms.ToolStripMenuItem editToolStrip;
+        //
+        // polar grid group box
+        //
         private System.Windows.Forms.GroupBox polarGridGroup;
         private System.Windows.Forms.Button btnGraphLine;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartColGraph;

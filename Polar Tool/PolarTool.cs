@@ -24,11 +24,6 @@ namespace Polar_Tool
         }
 
 
-        private void polarGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
         private void fileToolStrip_Click(object sender, EventArgs e)
         {
 
@@ -336,48 +331,94 @@ namespace Polar_Tool
             }
         }
 
+
         private void polarGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
             // declare and allocate the data series.  There is is one for each maximum col of data.
             Series lineSeries;
-            lineSeries = new Series();
-            lineSeries.Points.Clear();
+//            lineSeries = new Series();
+//            lineSeries.Points.Clear();
 
             // clear the current data series
             chartColGraph.Series.Clear();
             chartColGraph.DataSource = null;
 
-            lineSeries = polarChart.Series[e.ColumnIndex];
-            lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
-            lineSeries.ChartType = SeriesChartType.Spline;
+            PrintSeries("polarChart", polarChart.Series[e.ColumnIndex]);
+            lineSeries = DeepCopy(polarChart.Series[e.ColumnIndex]);
+            PrintSeries("lineSeries", lineSeries);
+            //            lineSeries = polarChart.Series[e.ColumnIndex];
+
+//            lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
+            lineSeries.ChartType = SeriesChartType.Line;
 
             SwapXY(lineSeries);
-            PrintSeries(lineSeries);
+            PrintSeries("Swap lineSeries", lineSeries);
             chartColGraph.Series.Add(lineSeries);
+            //printGraph(chartColGraph);
+            chartColGraph.Update();
         }
 
-        private void PrintSeries(Series s)
+        private Series DeepCopy(Series sin)
         {
-            Console.WriteLine("Series " + s.Name);
+            if (sin == null) { return (null); }
+            Series sout = new Series();
+            sout = new Series();
+            ShallowCopy(sout,sin);
+            return (sout);
+        }
+
+        private void ShallowCopy(Series sout, Series sin)
+        {
+            for (int i = 0; i < sin.Points.Count; i++)
+            {
+                sout.Points.Add();
+                sout.Points[i].XValue = sin.Points[i].XValue;
+                sout.Points[i].YValues = sin.Points[i].YValues;
+            }
+            sout.Name = "SC" + sin.Name;
+        }
+
+        //
+        // Print the contents of the graph
+        //
+        private void printGraph(Chart c)
+        {
+            for (int i = 0; i < c.Series.Count; i++)
+            {
+                Console.Write("Index: " + i +" Series: " + c.Series[i].Name);
+                Console.WriteLine(" Count: " + c.Series[i].Points.Count);
+                PrintSeries("Graph Data", c.Series[i]);
+            }
+        }
+
+
+        //
+        // Print the data in the series
+        //
+        private void PrintSeries(String caption, Series s)
+        {
+            Console.WriteLine(caption + ".  Series " + s.Name);
             for (int i = 0; i < s.Points.Count; i++)
             {
                 Console.WriteLine("Point " + i + " : x=" + s.Points[i].XValue + ". y=" + s.Points[i].YValues[0]);
             }
         }
 
+
+        //
+        // swaps the X and Y values in the passed series
+        // Note that this series was created by a shallow copy, it will re-order the original data.  See Deep Copy.
+        //
         private void SwapXY(Series s)
         {
-            DataPoint tp;
-            double t;
+            double tx;
 
             for (int i = 0; i < s.Points.Count; i++)
             {
-                tp = s.Points[i];
-                t = tp.XValue;
-                tp.XValue = tp.YValues[0];
-                tp.YValues[0] = t;
-                s.Points[i] = tp;
+                tx = s.Points[i].XValue;
+                s.Points[i].XValue = s.Points[i].YValues[0];
+                s.Points[i].YValues[0] = tx;
             }
         }
     }
