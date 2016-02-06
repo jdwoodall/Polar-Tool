@@ -337,26 +337,36 @@ namespace Polar_Tool
 
             // declare and allocate the data series.  There is is one for each maximum col of data.
             Series lineSeries;
-//            lineSeries = new Series();
-//            lineSeries.Points.Clear();
+            lineSeries = new Series();
+            lineSeries.Points.Clear();
+            lineSeries.YValuesPerPoint = 1;
 
             // clear the current data series
             chartColGraph.Series.Clear();
             chartColGraph.DataSource = null;
 
-            PrintSeries("polarChart", polarChart.Series[e.ColumnIndex]);
-            lineSeries = DeepCopy(polarChart.Series[e.ColumnIndex]);
-            PrintSeries("lineSeries", lineSeries);
-            //            lineSeries = polarChart.Series[e.ColumnIndex];
-
-//            lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
+            // copy series from DGV and display it
+            lineSeries = polarChart.Series[e.ColumnIndex];
+            lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
             lineSeries.ChartType = SeriesChartType.Line;
 
-            SwapXY(lineSeries);
-            PrintSeries("Swap lineSeries", lineSeries);
+            chartColGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(lineSeries) + 1.5);
             chartColGraph.Series.Add(lineSeries);
-            //printGraph(chartColGraph);
-            chartColGraph.Update();
+        }
+
+        private double FindMaxY(Series s)
+        {
+            double ymax;
+
+            ymax = 0;
+            for (int i = 0; i < s.Points.Count; i++)
+            {
+                if (s.Points[i].YValues[0] > ymax)
+                {
+                    ymax = s.Points[i].YValues[0];
+                }
+            }
+            return (ymax);
         }
 
         private Series DeepCopy(Series sin)

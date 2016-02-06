@@ -239,9 +239,9 @@
             this.chartColGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chartColGraph.BorderSkin.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chartColGraph.BorderSkin.BorderWidth = 2;
+            chartArea2.AxisX.Maximum = 180D;
             chartArea2.AxisX.Minimum = 0D;
-            chartArea2.AxisY.IsReversed = true;
-            chartArea2.AxisY.Maximum = 180D;
+            chartArea2.AxisY.Crossing = -1.7976931348623157E+308D;
             chartArea2.AxisY.Minimum = 0D;
             chartArea2.BorderColor = System.Drawing.Color.Transparent;
             chartArea2.Name = "ChartArea1";
