@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -55,9 +55,10 @@ namespace Polar_Tool
         private void fileStripOpen_Click(object sender, EventArgs e)
         {
             string filename;
+            DataGridViewCellEventArgs ee = new DataGridViewCellEventArgs(0, 0);
 
             openFileDialog1.FileName = "*.csv";
-            openFileDialog1.Filter = "CSV files(*.csv)|*.csv|Text files(*.txt)|*.txt|All files(*.*)|*.*";
+            openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -79,6 +80,12 @@ namespace Polar_Tool
             buildGrid(polardata, csvt.actRows, csvt.actCols);
             buildPolar(polardata, csvt.actRows, csvt.actCols);
 
+
+
+            buildColGraph(this, ee);
+            buildRowGraph(this, ee);
+          
+
             // show the chart view by default
             polarChart.Hide();
             polarGridGroup.Show();
@@ -86,7 +93,7 @@ namespace Polar_Tool
 
 
         //
-        //  File -> Eixt
+        //  File -> Exit
         //
         private void fileStripExit_Click(object sender, EventArgs e)
         {
@@ -109,122 +116,6 @@ namespace Polar_Tool
             return rowstart;
         }
  
-        
-        //
-        // Copies the data in the array polardata into a data table and assigns
-        // it to a DataGridView
-        // rows and cols are the size of the data
-        //
-        private void buildGrid(string[,] polardata, int rows, int cols)
-        {
-            int rowstart;
-            int rowcount, colcount;
-            double dnumber;
-            int inumber;
-            DataColumn tcol;
-
-            // Use a DataTable to hold the data and assign it to DGV
-            DataTable dt = new DataTable();
-
-            //  Unassign the display grid from the datasource while we build it.
-            //  This eliminates reuse problems with columns not being in the correct order.
-            polarGrid.DataSource = null;
-
-            // reset and clear the datatable
-            dt.Reset();
-
-            // get the first valid row
-            rowstart = firstvalidrow(polardata, cols);
-
-            // We use a DataTable to populate the DataGrid, so build the table
-
-            // Create columns
-            for (colcount = 0; colcount < cols; colcount++)
-            {
-                // add the column including its name
-                // the name should be a number except for possibly the [0,0] location
-                try
-                {
-                    dnumber = Convert.ToDouble(polardata[rowstart, colcount]);
-                    tcol = dt.Columns.Add(polardata[rowstart, colcount]);
-                }
-                catch (Exception)
-                {
-                    // value is not a valid number
-                    if (colcount == 0)
-                    {
-                        tcol = dt.Columns.Add(polardata[rowstart, colcount]);
-                    }
-                    else
-                    {
-                        tcol = dt.Columns.Add(polardata[rowstart, colcount+1]);
-                    }
-                }
-
-            }
-  
-            // copy the data from the polardata array in to the data table, row by row
-            for (rowcount = rowstart; rowcount < rows; rowcount++)
-            {
-                // create a DataRow using .NewRow()
-                DataRow row = dt.NewRow();
-
-                // iterate over all columns to fill the row
-                for (colcount = 0; colcount < cols; colcount++)
-                {
-                    try
-                    {
-                        // limit to one decimal point...who needs data in hundreths?
-                        dnumber = Convert.ToDouble(polardata[rowcount, colcount]);
-                        inumber = Convert.ToInt32(dnumber * 10.0);
-                        dnumber = inumber / 10.0;
-                        row[colcount] = dnumber;
-                    }
-                    // the data was not convertable to a decimal number, ie it was text
-                    catch(FormatException e)
-                    {
-                        row[colcount] = polardata[rowcount, colcount];
-                    }
-                }
-                // add the current row to the DataTable
-                dt.Rows.Add(row);
-            }
-
-            // Remove row 0 as it was used for the labels/captions of the column headers
-            dt.Rows.RemoveAt(0);
-
-            // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
-            polarGrid.DataSource = dt;
-
-            // Note the next actions have to be done AFTER the data table is assigned to the Grid View
-            // so the GridView will have the proper dimensions.
-
-            // Copy Row labels from column 0. 
-            // Note that datatable does not include a row.name attribute, so there is no way to assign it in the data table
-            // The best we can do is assign it in the DGV
-            for (rowcount = 0; rowcount < polarGrid.Rows.Count; rowcount++)
-            {
-                polarGrid.Rows[rowcount].HeaderCell.Value = dt.Rows[rowcount][0];
-                polarGrid.Rows[rowcount].Cells[0].Value = "";
-            }
-
-            // delete the column we just copied the row labels from.
-            polarGrid.Columns.RemoveAt(0);
-
-            // make the data table columns unsortable.  be careful about using the passed column size since we have 
-            // added or deleted columns
-            for (colcount = 0; colcount < polarGrid.Columns.Count; colcount++)
-            {
-                polarGrid.Columns[colcount].SortMode = DataGridViewColumnSortMode.NotSortable;
-            }
-
-            // make the column headers visible
-            polarGrid.ColumnHeadersVisible = true;
-
-            // done with the data table.
-            dt.Dispose();
-        }
-
 
         //
         //  Build the polar chart
@@ -288,6 +179,14 @@ namespace Polar_Tool
         // show a column of the polardata as series fit to a spline graph
         private void btnGraphLine_Click(object sender, EventArgs e)
         {
+
+        }
+
+        //
+        // NOTE:  This code is not currently used.  Save it though.
+        //
+        private void display_colGraph (object sender, EventArgs e, String btnText)
+        {
             int firstrow;
             int numrows;
             int numcols;
@@ -313,7 +212,7 @@ namespace Polar_Tool
             // find column user requested
             for (int colcount = 1; colcount < numcols; colcount++)
             {
-                if (polardata[firstrow, colcount] == txtGraphCol.Text)
+                if (polardata[firstrow, colcount] == btnText)
                 {
                     displaycolumn = colcount;
                     break;
@@ -334,26 +233,112 @@ namespace Polar_Tool
 
         private void polarGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            // build the column graph
+            buildColGraph(sender, e);
+            //build the row graph
+            buildRowGraph(sender, e);
+        }
+
+
+        private void buildRowGraph(object sender, DataGridViewCellEventArgs e)
+        {
+            // Build the Chart under the main form.  It shows the data moving along the selected row.
+            // declare and allocate the data series.  There is is one for each maximum col of data.
+
+            Series rowSeries;
+            rowSeries = new Series();
+            rowSeries.Points.Clear();
+            rowSeries.YValuesPerPoint = 1;
+
+            // clear the current data series
+            chartRowGraph.Series.Clear();
+            chartRowGraph.DataSource = null;
+
+            // move across the polarChart getting the data
+            for (int i = 0; i < polarChart.Series.Count; i++)
+            {
+                rowSeries.Points.AddXY(polarChart.Series[i].Name, polarChart.Series[i].Points[e.RowIndex].YValues[0]);
+            }
+
+            // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
+            // spine fitting appearing to be piecewise.
+            rowSeries.ChartType = SeriesChartType.Line;
+
+            //  fix the broken .NET autorange function.
+            chartRowGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(rowSeries) + 1.5);
+            chartRowGraph.Series.Add(rowSeries);
+        }
+
+
+        private void buildColGraph(object sender, DataGridViewCellEventArgs e)
+        {
+            //  Build the chart to the right of the form.  This displays one column of data from the selected column
+            //  indicate by e.ColumnIndex
+
+            int i;
+            double x, y;
 
             // declare and allocate the data series.  There is is one for each maximum col of data.
-            Series lineSeries;
-            lineSeries = new Series();
-            lineSeries.Points.Clear();
-            lineSeries.YValuesPerPoint = 1;
+            Series colSeries;
+            colSeries = new Series();
+            colSeries.Points.Clear();
+            colSeries.YValuesPerPoint = 1;
 
             // clear the current data series
             chartColGraph.Series.Clear();
             chartColGraph.DataSource = null;
 
-            // copy series from DGV and display it
-            lineSeries = polarChart.Series[e.ColumnIndex];
-            lineSeries.Name = polarChart.Series[e.ColumnIndex].Name;
-            lineSeries.ChartType = SeriesChartType.Line;
+            // copy the data to colSeries.  Do not assign directly from polarChart as it will mess up that graph
+            // move DOWN the column, specified e.ColumnIndex, building the data.
+            // there is not direct way to get the number of ROWS in a chart - that I can tell - only the colums, which we don't want.
+            // so we use this rather shameful method to get the data
+            i = 0;
+            while (i >= 0)
+            {
+                try
+                {
+                    x = polarChart.Series[e.ColumnIndex].Points[i].XValue;
+                    y = polarChart.Series[e.ColumnIndex].Points[i].YValues[0];
+                    // note this is assigned backwards.  We want the wind angle on Y and the speed on X
+                    colSeries.Points.AddXY(y, x);
+                    Console.WriteLine("@i = " + i + ". x = " + x + ". y = " + y);
+                    i++;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Break at i = " + i);
+                    i = -1;
+                }
+            }
 
-            chartColGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(lineSeries) + 1.5);
-            chartColGraph.Series.Add(lineSeries);
+            // make it appear as a line. Spline also works, but will have some dicontinuites as Msoft appears to be using
+            // a piecewise spline rather than a Nurb.  NEXT UP - Find a decent NURB library.
+            colSeries.ChartType = SeriesChartType.Line;
+
+            // this is because .NET auto range does not always work.
+            chartColGraph.ChartAreas[0].AxisX.Maximum = Math.Floor(FindMaxX(colSeries) + 1.5);
+            chartColGraph.Series.Add(colSeries);
         }
 
+
+        // Find the maximum value of X in the Series that is passed.  This could be an extension to the Series class.
+        private double FindMaxX(Series s)
+        {
+            double xmax;
+
+            xmax = 0;
+            for (int i = 0; i < s.Points.Count; i++)
+            {
+                if (s.Points[i].XValue > xmax)
+                {
+                    xmax = s.Points[i].XValue;
+                }
+            }
+            return (xmax);
+        }
+
+
+        //  Find the maximum value of Y in the Series that is passed.  Could be an extension to the Series class or combined with code above.
         private double FindMaxY(Series s)
         {
             double ymax;
@@ -369,6 +354,11 @@ namespace Polar_Tool
             return (ymax);
         }
 
+        //
+        // Create an independent copy of a Series.
+        // Not at sure this actually works as intended.
+        // This code is not currently used.
+        //
         private Series DeepCopy(Series sin)
         {
             if (sin == null) { return (null); }
@@ -378,6 +368,8 @@ namespace Polar_Tool
             return (sout);
         }
 
+
+        //  Works but not currently ussed.
         private void ShallowCopy(Series sout, Series sin)
         {
             for (int i = 0; i < sin.Points.Count; i++)
@@ -386,11 +378,15 @@ namespace Polar_Tool
                 sout.Points[i].XValue = sin.Points[i].XValue;
                 sout.Points[i].YValues = sin.Points[i].YValues;
             }
+
+            //  identify it as a Shadow Copy.  Handing at times.
             sout.Name = "SC" + sin.Name;
         }
 
         //
-        // Print the contents of the graph
+        // Print the contents of the Chart C
+        //  This prints across, then down.
+        //  It can generate a lot of data.
         //
         private void printGraph(Chart c)
         {
@@ -401,7 +397,6 @@ namespace Polar_Tool
                 PrintSeries("Graph Data", c.Series[i]);
             }
         }
-
 
         //
         // Print the data in the series
@@ -419,6 +414,7 @@ namespace Polar_Tool
         //
         // swaps the X and Y values in the passed series
         // Note that this series was created by a shallow copy, it will re-order the original data.  See Deep Copy.
+        // Does work, but be very careful how you use it.  Not recommended for chart data unless your sure you have a deep copy.
         //
         private void SwapXY(Series s)
         {
@@ -430,6 +426,11 @@ namespace Polar_Tool
                 s.Points[i].XValue = s.Points[i].YValues[0];
                 s.Points[i].YValues[0] = tx;
             }
+        }
+
+        private void rowChart_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

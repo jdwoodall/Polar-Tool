@@ -35,6 +35,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.polarChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -50,13 +51,13 @@
             this.viewStripPolarTable = new System.Windows.Forms.ToolStripMenuItem();
             this.polarGridGroup = new System.Windows.Forms.GroupBox();
             this.chartColGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.txtGraphCol = new System.Windows.Forms.TextBox();
-            this.btnGraphLine = new System.Windows.Forms.Button();
+            this.chartRowGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.polarChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.polarGrid)).BeginInit();
             this.polarMenuStrip.SuspendLayout();
             this.polarGridGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chartColGraph)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartRowGraph)).BeginInit();
             this.SuspendLayout();
             // 
             // polarChart
@@ -66,7 +67,7 @@
             this.polarChart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.polarChart.Legends.Add(legend1);
-            this.polarChart.Location = new System.Drawing.Point(28, 27);
+            this.polarChart.Location = new System.Drawing.Point(31, 94);
             this.polarChart.Name = "polarChart";
             this.polarChart.Size = new System.Drawing.Size(1002, 510);
             this.polarChart.TabIndex = 3;
@@ -137,7 +138,7 @@
             this.polarGrid.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.polarGrid.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.polarGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.polarGrid.Size = new System.Drawing.Size(821, 449);
+            this.polarGrid.Size = new System.Drawing.Size(826, 449);
             this.polarGrid.TabIndex = 4;
             this.polarGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
             this.polarGrid.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
@@ -152,7 +153,7 @@
             this.viewToolStrip});
             this.polarMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.polarMenuStrip.Name = "polarMenuStrip";
-            this.polarMenuStrip.Size = new System.Drawing.Size(1059, 24);
+            this.polarMenuStrip.Size = new System.Drawing.Size(1064, 24);
             this.polarMenuStrip.TabIndex = 2;
             this.polarMenuStrip.Text = "polarMenuStrip";
             // 
@@ -221,59 +222,58 @@
             this.polarGridGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.polarGridGroup.Controls.Add(this.chartRowGraph);
             this.polarGridGroup.Controls.Add(this.chartColGraph);
-            this.polarGridGroup.Controls.Add(this.txtGraphCol);
-            this.polarGridGroup.Controls.Add(this.btnGraphLine);
             this.polarGridGroup.Controls.Add(this.polarGrid);
             this.polarGridGroup.Location = new System.Drawing.Point(0, 27);
             this.polarGridGroup.Name = "polarGridGroup";
-            this.polarGridGroup.Size = new System.Drawing.Size(1059, 510);
+            this.polarGridGroup.Size = new System.Drawing.Size(1064, 641);
             this.polarGridGroup.TabIndex = 5;
             this.polarGridGroup.TabStop = false;
             this.polarGridGroup.Text = "Polar TWA/TWS";
             // 
             // chartColGraph
             // 
-            this.chartColGraph.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chartColGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.chartColGraph.BorderlineColor = System.Drawing.Color.Black;
             this.chartColGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chartColGraph.BorderSkin.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chartColGraph.BorderSkin.BorderWidth = 2;
-            chartArea2.AxisX.Maximum = 180D;
-            chartArea2.AxisX.Minimum = 0D;
-            chartArea2.AxisY.Crossing = -1.7976931348623157E+308D;
-            chartArea2.AxisY.Minimum = 0D;
-            chartArea2.BorderColor = System.Drawing.Color.Transparent;
-            chartArea2.Name = "ChartArea1";
-            this.chartColGraph.ChartAreas.Add(chartArea2);
-            this.chartColGraph.Location = new System.Drawing.Point(827, 19);
+            chartArea3.AxisX.Minimum = 0D;
+            chartArea3.AxisY.Crossing = -1.7976931348623157E+308D;
+            chartArea3.AxisY.IsReversed = true;
+            chartArea3.AxisY.Maximum = 180D;
+            chartArea3.AxisY.Minimum = 0D;
+            chartArea3.BorderColor = System.Drawing.Color.Transparent;
+            chartArea3.Name = "ChartArea1";
+            this.chartColGraph.ChartAreas.Add(chartArea3);
+            this.chartColGraph.Location = new System.Drawing.Point(832, 19);
             this.chartColGraph.Name = "chartColGraph";
             this.chartColGraph.Size = new System.Drawing.Size(232, 449);
             this.chartColGraph.TabIndex = 7;
             this.chartColGraph.Text = "chart1";
             // 
-            // txtGraphCol
+            // chartRowGraph
             // 
-            this.txtGraphCol.Location = new System.Drawing.Point(890, 477);
-            this.txtGraphCol.Name = "txtGraphCol";
-            this.txtGraphCol.Size = new System.Drawing.Size(100, 20);
-            this.txtGraphCol.TabIndex = 6;
-            // 
-            // btnGraphLine
-            // 
-            this.btnGraphLine.Location = new System.Drawing.Point(770, 474);
-            this.btnGraphLine.Name = "btnGraphLine";
-            this.btnGraphLine.Size = new System.Drawing.Size(94, 25);
-            this.btnGraphLine.TabIndex = 5;
-            this.btnGraphLine.Text = "Graph Column";
-            this.btnGraphLine.UseVisualStyleBackColor = true;
-            this.btnGraphLine.Click += new System.EventHandler(this.btnGraphLine_Click);
+            this.chartRowGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.chartRowGraph.BorderlineColor = System.Drawing.Color.Black;
+            this.chartRowGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
+            chartArea2.Name = "ChartArea1";
+            this.chartRowGraph.ChartAreas.Add(chartArea2);
+            this.chartRowGraph.Location = new System.Drawing.Point(0, 474);
+            this.chartRowGraph.Name = "chartRowGraph";
+            this.chartRowGraph.Size = new System.Drawing.Size(1064, 167);
+            this.chartRowGraph.TabIndex = 8;
+            this.chartRowGraph.Text = "chart1";
+            this.chartRowGraph.Click += new System.EventHandler(this.rowChart_Click);
             // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1059, 537);
+            this.ClientSize = new System.Drawing.Size(1064, 671);
             this.Controls.Add(this.polarGridGroup);
             this.Controls.Add(this.polarMenuStrip);
             this.Controls.Add(this.polarChart);
@@ -285,8 +285,8 @@
             this.polarMenuStrip.ResumeLayout(false);
             this.polarMenuStrip.PerformLayout();
             this.polarGridGroup.ResumeLayout(false);
-            this.polarGridGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chartColGraph)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartRowGraph)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -326,9 +326,8 @@
         // polar grid group box
         //
         private System.Windows.Forms.GroupBox polarGridGroup;
-        private System.Windows.Forms.Button btnGraphLine;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartColGraph;
-        private System.Windows.Forms.TextBox txtGraphCol;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartRowGraph;
     }
 }
 
