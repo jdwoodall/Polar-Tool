@@ -261,6 +261,7 @@ namespace Polar_Tool
             // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
             // spine fitting appearing to be piecewise.
             rowSeries.ChartType = SeriesChartType.Line;
+            rowSeries.Color = Color.FromName("Black");
 
             //  fix the broken .NET autorange function.
             chartRowGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(rowSeries) + 1.5);
@@ -312,6 +313,7 @@ namespace Polar_Tool
             // make it appear as a line. Spline also works, but will have some dicontinuites as Msoft appears to be using
             // a piecewise spline rather than a Nurb.  NEXT UP - Find a decent NURB library.
             colSeries.ChartType = SeriesChartType.Line;
+            colSeries.Color = Color.FromName("Black");
 
             // this is because .NET auto range does not always work.
             chartColGraph.ChartAreas[0].AxisX.Maximum = Math.Floor(FindMaxX(colSeries) + 1.5);
