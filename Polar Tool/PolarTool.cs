@@ -80,11 +80,9 @@ namespace Polar_Tool
             buildGrid(polardata, csvt.actRows, csvt.actCols);
             buildPolar(polardata, csvt.actRows, csvt.actCols);
 
-
-
+            //  Build the two smaller graphs with the initial values of 0,0
             buildColGraph(this, ee);
             buildRowGraph(this, ee);
-          
 
             // show the chart view by default
             polarChart.Hide();
