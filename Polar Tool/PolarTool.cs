@@ -58,7 +58,7 @@ namespace Polar_Tool
             string filename;
             DataGridViewCellEventArgs ee = new DataGridViewCellEventArgs(0, 0);
 
-            openFileDialog1.FileName = "*.csv";
+            // set the file open dialog file mask
             openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -252,7 +252,13 @@ namespace Polar_Tool
             yarray = new double[polarChart.Series.Count];
             double[] p;
             double[] r;
-            r = new double[polarChart.Series.Count];
+            int maxspeed;  // maximum speed listed in the polar chart
+
+            // find the max speed shown in the polar chart
+            maxspeed = Convert.ToInt32(polarChart.Series[polarChart.Series.Count - 1].Name) + 1;
+
+            //            r = new double[polarChart.Series.Count];
+            r = new double[maxspeed];
 
             // define a new series for plotting the row graph
             Series rowSeries;
@@ -275,25 +281,41 @@ namespace Polar_Tool
             {
                 xarray[i] = Convert.ToDouble(polarChart.Series[i].Name);
                 yarray[i] = Convert.ToDouble(polarChart.Series[i].Points[e.RowIndex].YValues[0]);
-                rowSeries.Points.AddXY(polarChart.Series[i].Name, polarChart.Series[i].Points[e.RowIndex].YValues[0]);
+                rowSeries.Points.AddXY(xarray[i], yarray[i]);
             }
 
             // get the regression
             p = Fit.Polynomial(xarray, yarray, degree);
 
             // compute the estimated value
+            for (int i = 0; i < maxspeed; i++)
+            {
+                r[i] = 0;
+                for (int j = 0; j < degree + 1; j++)
+                {
+                    //Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
+                    r[i] += p[j] * Math.Pow(i, j);
+                    //Console.WriteLine(", r[" + i + "] = " + r[i]);
+                }
+                //Console.WriteLine("r[" + i + "] = " + r[i]);
+                estSeries.Points.AddXY(i, r[i]);
+            }
+
+#if false
+            // compute the estimated value
             for (int i = 0; i < polarChart.Series.Count; i++)
             {
                 r[i] = 0;
                 for (int j = 0; j < degree + 1; j++)
                 {
-                    Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
+                    //Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
                     r[i] += p[j] * Math.Pow(xarray[i], j);
-                    Console.WriteLine(", r[" + i + "] = " + r[i]);
+                    //Console.WriteLine(", r[" + i + "] = " + r[i]);
                 }
-                Console.WriteLine("r[" + i + "] = " + r[i]);
+                //Console.WriteLine("r[" + i + "] = " + r[i]);
                 estSeries.Points.AddXY(xarray[i], r[i]);
             }
+#endif
 
             // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
             // spine fitting appearing to be piecewise.
@@ -301,18 +323,26 @@ namespace Polar_Tool
             rowSeries.Color = Color.FromName("Black");
             rowSeries.Name = "rowSeries";
             rowSeries.BorderDashStyle = ChartDashStyle.Solid;
+            rowSeries.BorderWidth = 5;
+//            PrintSeries("Row Series", rowSeries);
 
             estSeries.ChartType = SeriesChartType.Line;
             estSeries.Color = Color.FromName("Red");
             estSeries.Name = "estSeries";
             estSeries.BorderDashStyle = ChartDashStyle.Dash;
+//            PrintSeries("estSeries", estSeries);
 
 
             //  fix the broken .NET autorange function.
             chartRowGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(rowSeries) + 1.5);
+            chartRowGraph.ChartAreas[0].AxisX.Minimum = 0;
+
+            // set the line properties (yes, it really is Border...) and add the two chart series
             chartRowGraph.Series.Add(rowSeries);
+            chartRowGraph.Series["rowSeries"].BorderWidth = 1;
             chartRowGraph.Series.Add(estSeries);
-//            chartRowGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.Dash;
+            chartRowGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.DashDotDot;
+            chartRowGraph.Series["estSeries"].BorderWidth = 1;
         }
 
 
