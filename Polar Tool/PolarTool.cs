@@ -299,16 +299,20 @@ namespace Polar_Tool
             // spine fitting appearing to be piecewise.
             rowSeries.ChartType = SeriesChartType.Line;
             rowSeries.Color = Color.FromName("Black");
+            rowSeries.Name = "rowSeries";
+            rowSeries.BorderDashStyle = ChartDashStyle.Solid;
 
             estSeries.ChartType = SeriesChartType.Line;
             estSeries.Color = Color.FromName("Red");
-            
+            estSeries.Name = "estSeries";
+            estSeries.BorderDashStyle = ChartDashStyle.Dash;
 
 
             //  fix the broken .NET autorange function.
             chartRowGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(rowSeries) + 1.5);
             chartRowGraph.Series.Add(rowSeries);
             chartRowGraph.Series.Add(estSeries);
+//            chartRowGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.Dash;
         }
 
 
