@@ -258,6 +258,7 @@ namespace Polar_Tool
                 rowSeries.Points.AddXY(polarChart.Series[i].Name, polarChart.Series[i].Points[e.RowIndex].YValues[0]);
             }
 
+
             // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
             // spine fitting appearing to be piecewise.
             rowSeries.ChartType = SeriesChartType.Line;
