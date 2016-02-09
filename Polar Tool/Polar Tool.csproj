@@ -52,6 +52,9 @@
     <Reference Include="CSVTools">
       <HintPath>..\..\..\..\Google Drive\Projects\CSVTools\CSVTools\bin\Debug\CSVTools.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>D:\GitHub\mathnet-numerics\obj\lib-signed\Net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -2,6 +2,9 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics;
 
 namespace Polar_Tool
 {
@@ -243,6 +246,17 @@ namespace Polar_Tool
             // Build the Chart under the main form.  It shows the data moving along the selected row.
             // declare and allocate the data series.  There is is one for each maximum col of data.
 
+            // variables used for regression analysis
+            const int degree = 4;  // return a 4th degree polynomial.  there are 5 results in the result vector due to the constant term.
+            double[] xarray;
+            xarray = new double[polarChart.Series.Count];
+            double[] yarray;
+            yarray = new double[polarChart.Series.Count];
+            double[] p;
+            double[] r;
+            r = new double[polarChart.Series.Count];
+
+            // define a new series for plotting the row graph
             Series rowSeries;
             rowSeries = new Series();
             rowSeries.Points.Clear();
@@ -255,8 +269,28 @@ namespace Polar_Tool
             // move across the polarChart getting the data
             for (int i = 0; i < polarChart.Series.Count; i++)
             {
+                xarray[i] = Convert.ToDouble(polarChart.Series[i].Name);
+                yarray[i] = Convert.ToDouble(polarChart.Series[i].Points[e.RowIndex].YValues[0]);
                 rowSeries.Points.AddXY(polarChart.Series[i].Name, polarChart.Series[i].Points[e.RowIndex].YValues[0]);
             }
+
+            // get the regression
+            p = Fit.Polynomial(xarray, yarray, degree);
+
+            // compute the estimated value
+            for (int i = 0; i < polarChart.Series.Count; i++)
+            {
+                r[i] = 0;
+                for (int j = 0; j < degree + 1; j++)
+                {
+                    Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
+                    r[i] += p[j] * Math.Pow(xarray[i], j);
+                    Console.WriteLine(", r[" + i + "] = " + r[i]);
+                }
+                Console.WriteLine("r[" + i + "] = " + r[i]);
+            }
+
+
 
             // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
             // spine fitting appearing to be piecewise.
@@ -300,12 +334,12 @@ namespace Polar_Tool
                     y = polarChart.Series[e.ColumnIndex].Points[i].YValues[0];
                     // note this is assigned backwards.  We want the wind angle on Y and the speed on X
                     colSeries.Points.AddXY(y, x);
-                    Console.WriteLine("@i = " + i + ". x = " + x + ". y = " + y);
+                    //Console.WriteLine("@i = " + i + ". x = " + x + ". y = " + y);
                     i++;
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Break at i = " + i);
+                    //Console.WriteLine("Break at i = " + i);
                     i = -1;
                 }
             }
