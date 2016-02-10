@@ -35,8 +35,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.polarChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.polarGrid = new System.Windows.Forms.DataGridView();
@@ -50,14 +50,14 @@
             this.viewStripPolarGraph = new System.Windows.Forms.ToolStripMenuItem();
             this.viewStripPolarTable = new System.Windows.Forms.ToolStripMenuItem();
             this.polarGridGroup = new System.Windows.Forms.GroupBox();
-            this.chartColGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chartRowGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chartColGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.polarChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.polarGrid)).BeginInit();
             this.polarMenuStrip.SuspendLayout();
             this.polarGridGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chartColGraph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartRowGraph)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartColGraph)).BeginInit();
             this.SuspendLayout();
             // 
             // polarChart
@@ -143,6 +143,8 @@
             this.polarGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
             this.polarGrid.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
             this.polarGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
+            this.polarGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_ColumnHeader);
+            this.polarGrid.ColumnHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_ColumnHeader);
             // 
             // polarMenuStrip
             // 
@@ -232,6 +234,21 @@
             this.polarGridGroup.TabStop = false;
             this.polarGridGroup.Text = "Polar TWA/TWS";
             // 
+            // chartRowGraph
+            // 
+            this.chartRowGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.chartRowGraph.BorderlineColor = System.Drawing.Color.Black;
+            this.chartRowGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
+            chartArea2.Name = "ChartArea1";
+            this.chartRowGraph.ChartAreas.Add(chartArea2);
+            this.chartRowGraph.Location = new System.Drawing.Point(0, 474);
+            this.chartRowGraph.Name = "chartRowGraph";
+            this.chartRowGraph.Size = new System.Drawing.Size(1064, 167);
+            this.chartRowGraph.TabIndex = 8;
+            this.chartRowGraph.Text = "chart1";
+            this.chartRowGraph.Click += new System.EventHandler(this.rowChart_Click);
+            // 
             // chartColGraph
             // 
             this.chartColGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -254,21 +271,6 @@
             this.chartColGraph.TabIndex = 7;
             this.chartColGraph.Text = "chart1";
             // 
-            // chartRowGraph
-            // 
-            this.chartRowGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.chartRowGraph.BorderlineColor = System.Drawing.Color.Black;
-            this.chartRowGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea2.Name = "ChartArea1";
-            this.chartRowGraph.ChartAreas.Add(chartArea2);
-            this.chartRowGraph.Location = new System.Drawing.Point(0, 474);
-            this.chartRowGraph.Name = "chartRowGraph";
-            this.chartRowGraph.Size = new System.Drawing.Size(1064, 167);
-            this.chartRowGraph.TabIndex = 8;
-            this.chartRowGraph.Text = "chart1";
-            this.chartRowGraph.Click += new System.EventHandler(this.rowChart_Click);
-            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,8 +287,8 @@
             this.polarMenuStrip.ResumeLayout(false);
             this.polarMenuStrip.PerformLayout();
             this.polarGridGroup.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.chartColGraph)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartRowGraph)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartColGraph)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

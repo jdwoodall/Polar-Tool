@@ -1,5 +1,6 @@
 ﻿using MathNet.Numerics;
 using System;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -254,10 +255,16 @@ namespace Polar_Tool
             double[] r;
             int maxspeed;  // maximum speed listed in the polar chart
 
+            //  if the column header is selected, the row index will be -1, do nothing.
+            if (e.RowIndex == -1)
+            {
+                return;
+            }
+
             // find the max speed shown in the polar chart
             maxspeed = Convert.ToInt32(polarChart.Series[polarChart.Series.Count - 1].Name) + 1;
 
-            //            r = new double[polarChart.Series.Count];
+            //            r = new double[polarChart.Series.Count];(
             r = new double[maxspeed];
 
             // define a new series for plotting the row graph
@@ -284,10 +291,10 @@ namespace Polar_Tool
                 rowSeries.Points.AddXY(xarray[i], yarray[i]);
             }
 
-            // get the regression
+            // compute the regression and build a series to display it.
             p = Fit.Polynomial(xarray, yarray, degree);
 
-            // compute the estimated value
+            // compute the estimated values based on the fit.
             for (int i = 0; i < maxspeed; i++)
             {
                 r[i] = 0;
@@ -301,35 +308,17 @@ namespace Polar_Tool
                 estSeries.Points.AddXY(i, r[i]);
             }
 
-#if false
-            // compute the estimated value
-            for (int i = 0; i < polarChart.Series.Count; i++)
-            {
-                r[i] = 0;
-                for (int j = 0; j < degree + 1; j++)
-                {
-                    //Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
-                    r[i] += p[j] * Math.Pow(xarray[i], j);
-                    //Console.WriteLine(", r[" + i + "] = " + r[i]);
-                }
-                //Console.WriteLine("r[" + i + "] = " + r[i]);
-                estSeries.Points.AddXY(xarray[i], r[i]);
-            }
-#endif
 
             // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
             // spine fitting appearing to be piecewise.
             rowSeries.ChartType = SeriesChartType.Line;
             rowSeries.Color = Color.FromName("Black");
             rowSeries.Name = "rowSeries";
-            rowSeries.BorderDashStyle = ChartDashStyle.Solid;
-            rowSeries.BorderWidth = 5;
 //            PrintSeries("Row Series", rowSeries);
 
             estSeries.ChartType = SeriesChartType.Line;
             estSeries.Color = Color.FromName("Red");
             estSeries.Name = "estSeries";
-            estSeries.BorderDashStyle = ChartDashStyle.Dash;
 //            PrintSeries("estSeries", estSeries);
 
 
@@ -353,6 +342,12 @@ namespace Polar_Tool
 
             int i;
             double x, y;
+
+            // if a row header is selected, the index will be -1, do nothing.
+            if (e.ColumnIndex == -1)
+            {
+                return;
+            }
 
             // declare and allocate the data series.  There is is one for each maximum col of data.
             Series colSeries;
@@ -387,7 +382,7 @@ namespace Polar_Tool
                 }
             }
 
-            // make it appear as a line. Spline also works, but will have some dicontinuites as Msoft appears to be using
+            // make it appear as a line. Spline also works, but will have some dicontinuities as Msoft appears to be using
             // a piecewise spline rather than a Nurb.  NEXT UP - Find a decent NURB library.
             colSeries.ChartType = SeriesChartType.Line;
             colSeries.Color = Color.FromName("Black");
@@ -461,7 +456,7 @@ namespace Polar_Tool
         }
 
         //
-        // Print the contents of the Chart C
+        //  Print the contents of the Chart C
         //  This prints across, then down.
         //  It can generate a lot of data.
         //
@@ -490,7 +485,7 @@ namespace Polar_Tool
 
         //
         // swaps the X and Y values in the passed series
-        // Note that this series was created by a shallow copy, it will re-order the original data.  See Deep Copy.
+        // Note that if this series was created by a shallow copy, it will re-order the original data.  See Deep Copy.
         // Does work, but be very careful how you use it.  Not recommended for chart data unless your sure you have a deep copy.
         //
         private void SwapXY(Series s)
@@ -508,6 +503,27 @@ namespace Polar_Tool
         private void rowChart_Click(object sender, EventArgs e)
         {
 
+        }
+
+        //
+        // column header click or double click
+        //
+        private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
+        {
+
+            DialogResult result;
+            DataColumn newColumn;
+
+            result = MessageBox.Show("Insert column to left?", "Column Header Click", MessageBoxButtons.YesNoCancel);
+
+            if (result == DialogResult.Yes)
+            {
+                // create new column
+                newColumn = new DataColumn();
+
+
+                polarGrid.Columns.Insert(e.ColumnIndex, newColumn);
+            }
         }
     }
 }
