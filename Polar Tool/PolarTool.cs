@@ -20,6 +20,9 @@ namespace Polar_Tool
         //want this data to stay in scope
         string[,] polardata = new string[NumRows, NumCols];
 
+        // This is the main datatable.  It is built in buildGrid.  Keep it in scope.
+        DataTable dt = new DataTable("polarDataTable");
+
         public formMain()
         {
             InitializeComponent();
@@ -512,17 +515,32 @@ namespace Polar_Tool
         {
 
             DialogResult result;
-            DataColumn newColumn;
+            //DataColumn newColumn;
+
+            // test code next 3 lines
+            polarChart.DataSource = null;
+            polarChart.DataSource = dt;
+            return;
 
             result = MessageBox.Show("Insert column to left?", "Column Header Click", MessageBoxButtons.YesNoCancel);
 
             if (result == DialogResult.Yes)
             {
+                // clear data from exising graph
+                polarChart.DataSource = null;
+
                 // create new column
-                newColumn = new DataColumn();
+                DataColumn newColumn = new DataColumn();
+                newColumn.ColumnName = "0";
 
 
-                polarGrid.Columns.Insert(e.ColumnIndex, newColumn);
+                //  add the data column
+                dt.Columns.Add(newColumn);
+                dt.Columns.RemoveAt(dt.Columns.Count-1);
+
+                // assign the table to the graph
+                polarChart.DataSource = dt;
+                //newColumn.SetOrdinal(0);
             }
         }
     }

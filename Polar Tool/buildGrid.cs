@@ -19,9 +19,6 @@ namespace Polar_Tool
             int inumber;
             DataColumn tcol;
 
-            // Use a DataTable to hold the data and assign it to DGV
-            DataTable dt = new DataTable();
-
             //  Unassign the display grid from the datasource while we build it.
             //  This eliminates reuse problems with columns not being in the correct order.
             polarGrid.DataSource = null;
@@ -118,8 +115,6 @@ namespace Polar_Tool
             // make the column headers visible
             polarGrid.ColumnHeadersVisible = true;
 
-            // done with the data table.
-            dt.Dispose();
         }
     }
 }
