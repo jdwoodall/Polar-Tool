@@ -21,7 +21,7 @@ namespace Polar_Tool
         string[,] polardata = new string[NumRows, NumCols];
 
         // This is the main datatable.  It is built in buildGrid.  Keep it in scope.
-        DataTable dt = new DataTable("polarDataTable");
+        DataTable dt;
 
         public formMain()
         {
@@ -61,6 +61,17 @@ namespace Polar_Tool
         {
             string filename;
             DataGridViewCellEventArgs ee = new DataGridViewCellEventArgs(0, 0);
+
+            // dispose of old dt table if it existed and create a new one
+            try
+            {
+                this.dt.Dispose();
+            }
+            catch (Exception)
+            {
+                // do nothing if it does not exist
+            }
+            this.dt = new DataTable("polarDataTable");
 
             // set the file open dialog file mask
             openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
@@ -513,14 +524,7 @@ namespace Polar_Tool
         //
         private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
-
             DialogResult result;
-            //DataColumn newColumn;
-
-            // test code next 3 lines
-            polarChart.DataSource = null;
-            polarChart.DataSource = dt;
-            return;
 
             result = MessageBox.Show("Insert column to left?", "Column Header Click", MessageBoxButtons.YesNoCancel);
 
@@ -529,18 +533,13 @@ namespace Polar_Tool
                 // clear data from exising graph
                 polarChart.DataSource = null;
 
-                // create new column
-                DataColumn newColumn = new DataColumn();
-                newColumn.ColumnName = "0";
-
-
                 //  add the data column
-                dt.Columns.Add(newColumn);
-                dt.Columns.RemoveAt(dt.Columns.Count-1);
+                DataColumn newColumn = dt.Columns.Add(Convert.ToString(e.ColumnIndex), System.Type.GetType("System.String"));
+                newColumn.SetOrdinal(e.ColumnIndex);
 
                 // assign the table to the graph
                 polarChart.DataSource = dt;
-                //newColumn.SetOrdinal(0);
+
             }
         }
     }

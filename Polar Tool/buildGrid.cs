@@ -53,7 +53,6 @@ namespace Polar_Tool
                         tcol = dt.Columns.Add(polardata[rowstart, colcount + 1]);
                     }
                 }
-
             }
 
             // copy the data from the polardata array in to the data table, row by row
