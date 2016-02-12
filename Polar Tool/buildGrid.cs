@@ -85,7 +85,6 @@ namespace Polar_Tool
             // Remove row 0 as it was used for the labels/captions of the column headers
             dt.Rows.RemoveAt(0);
 
-
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
             polarGrid.DataSource = dt;
 

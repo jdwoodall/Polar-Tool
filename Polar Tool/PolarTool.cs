@@ -525,8 +525,9 @@ namespace Polar_Tool
         private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
+            int ord;
 
-            result = MessageBox.Show("Insert column to left?", "Column Header Click", MessageBoxButtons.YesNoCancel);
+            result = MessageBox.Show("Insert column?", "Column Header Click", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
@@ -534,8 +535,10 @@ namespace Polar_Tool
                 polarChart.DataSource = null;
 
                 //  add the data column
-                DataColumn newColumn = dt.Columns.Add(Convert.ToString(e.ColumnIndex), System.Type.GetType("System.String"));
-                newColumn.SetOrdinal(e.ColumnIndex);
+                DataColumn newColumn = dt.Columns.Add();
+                newColumn.Caption = "0";
+                newColumn.ColumnName = "0";
+                newColumn.SetOrdinal(0);
 
                 // assign the table to the graph
                 polarChart.DataSource = dt;
