@@ -80,7 +80,7 @@ namespace Polar_Tool
             // delete the first row tha the column names came from
             dt.Rows.RemoveAt(0);
 
-            //printTable(dt);
+            printTable(dt);
 
             // display the Grid
             displayGrid(dt, dt.Rows.Count, dt.Columns.Count);

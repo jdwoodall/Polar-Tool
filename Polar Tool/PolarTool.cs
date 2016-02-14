@@ -603,9 +603,56 @@ namespace Polar_Tool
                 // this had been problematic
                 cols = polarData[1].Count;
                 rows = polarData.Count;
-                //Console.WriteLine("Insert @" + rows + ", " + cols);
+                Console.WriteLine("Insert @" + rows + ", " + cols);
+                polarDataPrint(polarData);
 
                 displayGrid(dt, rows, cols);
+            }
+        }
+
+        //
+        // row header click or double click
+        //
+        private void polarGrid_RowHeader(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            DialogResult result;
+            DataColumn newCol;
+            DataGridViewColumn gridColumn = new DataGridViewColumn();
+            List<String> listString = new List<String>();
+            int rows, cols;
+
+            result = MessageBox.Show("Insert zero value row at cursor?", "Row Header Click", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+
+                for (int i = 0; i < polarData[1].Count; i++)
+                {
+                    listString.Add("0");
+                }
+                // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
+                polarData.Insert(e.ColumnIndex + 1, listString);
+
+                // this had been problematic
+                cols = polarData[1].Count;
+                rows = polarData.Count;
+                Console.WriteLine("Insert @" + rows + ", " + cols);
+                polarDataPrint(polarData);
+
+                displayGrid(dt, rows, cols);
+            }
+        }
+
+        private void polarDataPrint(List<List<string>> polarData)
+        {
+            for (int i = 0; i < polarData.Count; i++)
+            {
+                Console.Write("Row: " + i + ". ");
+                for (int j = 0; j < polarData[i].Count; j++)
+                {
+                    Console.Write(", " + j + ": " + polarData[i][j]);
+                }
+                Console.WriteLine("");
             }
         }
     }
