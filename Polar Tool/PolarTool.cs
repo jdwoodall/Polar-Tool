@@ -1,5 +1,6 @@
 ﻿using MathNet.Numerics;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -9,16 +10,13 @@ namespace Polar_Tool
 {
     public partial class formMain : Form
     {
-        // use these for the  size of  the CSV array.  They need to be global to this space.
-        // it has to big enough for any possible array.  It could probably be half this size.
-        const int NumRows = 360;
-        const int NumCols = 100;
 
         //want this tool to stay in scope although it could be moved into File->Open
         CSVTools.CSVTools csvt = new CSVTools.CSVTools();
 
         //want this data to stay in scope
-        string[,] polardata = new string[NumRows, NumCols];
+        // string[,] polardata = new string[NumRows, NumCols];
+        List<List<String>> polardata = new List<List<String>>();
 
         // This is the main datatable.  It is built in buildGrid.  Keep it in scope.
         DataTable dt;
@@ -89,8 +87,8 @@ namespace Polar_Tool
             }
 
             // this will read the CSV file into a two dimensional array
-            polardata.Initialize();
-            polardata = csvt.CSVRead(filename, NumRows, NumCols);
+            polardata.Clear();
+            polardata = csvt.CSVRead(filename);
 
             // build the Grid and Polar Charts
             buildGrid(polardata, csvt.actRows, csvt.actCols);
@@ -114,7 +112,7 @@ namespace Polar_Tool
             Close();
         }
 
-        int firstvalidrow(string[,] data, int cols)
+        int firstvalidrow(List<List<String>> data, int cols)
         {
             int colcount;
             int rowstart;
@@ -122,7 +120,7 @@ namespace Polar_Tool
             rowstart = 0;
             for (colcount = 1; colcount < cols; colcount++)
             {
-                if (data[0, colcount] == null || data[0,colcount] == "")
+                if (data[rowstart][colcount] == null || data[0][colcount] == "")
                 {
                     rowstart = 1;
                 }
@@ -134,7 +132,7 @@ namespace Polar_Tool
         //
         //  Build the polar chart
         //
-        private void buildPolar(string[,] polardata, int rows, int cols)
+        private void buildPolar(List<List<String>> polardata, int rows, int cols)
         {
             int rowstart;
             int rowcount, colcount;
@@ -163,7 +161,7 @@ namespace Polar_Tool
                 // add a series to the polar chart.  The first row in each column is the is the wind speed.
                 // Console.WriteLine("Series added: " + polardata[0, colcount]);
 
-                polarSeries[colcount - 1] = polarChart.Series.Add(polardata[rowstart, colcount]);
+                polarSeries[colcount-1] = polarChart.Series.Add(polardata[rowstart][colcount]);
                 polarSeries[colcount-1].ChartType = SeriesChartType.Polar;
 
                 //  Add the data points.  The series is added as an XY pair where X = the angle and Y = the boat speed
@@ -172,10 +170,10 @@ namespace Polar_Tool
                     //Console.WriteLine("Row: " + rowcount + ". Column: " + colcount + ". Data: " + polardata[rowcount, colcount]);
 
                     // explicitly convert the strings to double
-                    theta = Convert.ToDouble(polardata[rowcount, 0]);
+                    theta = Convert.ToDouble(polardata[rowcount][0]);
                     try
                     {
-                        r = Convert.ToDouble(polardata[rowcount, colcount]);
+                        r = Convert.ToDouble(polardata[rowcount][colcount]);
                         polarSeries[colcount - 1].Points.AddXY(theta, r);
                     }
                     catch (Exception)
@@ -226,7 +224,7 @@ namespace Polar_Tool
             // find column user requested
             for (int colcount = 1; colcount < numcols; colcount++)
             {
-                if (polardata[firstrow, colcount] == btnText)
+                if (polardata[firstrow][colcount] == btnText)
                 {
                     displaycolumn = colcount;
                     break;
@@ -234,13 +232,13 @@ namespace Polar_Tool
             }
 
             // set the chart type to spline
-            lineSeries = chartColGraph.Series.Add(polardata[firstrow, displaycolumn]);
+            lineSeries = chartColGraph.Series.Add(polardata[firstrow][displaycolumn]);
             lineSeries.ChartType = SeriesChartType.Spline;
 
             // add data from polardata.  The first row are headings and need to be skipped.
             for (int rowcount = firstrow+1; rowcount < numrows; rowcount++)
             {
-                lineSeries.Points.AddXY(Convert.ToDouble(polardata[rowcount, displaycolumn]), Convert.ToDouble(polardata[rowcount, 0]));
+                lineSeries.Points.AddXY(Convert.ToDouble(polardata[rowcount][displaycolumn]), Convert.ToDouble(polardata[rowcount][0]));
             }
         }
 
@@ -297,11 +295,15 @@ namespace Polar_Tool
             chartRowGraph.Series.Clear();
             chartRowGraph.DataSource = null;
 
-            // move across the polarChart getting the data
-            for (int i = 0; i < polarChart.Series.Count; i++)
+            // move across the polarGrid getting the data
+            for (int i = 0; i < polarGrid.ColumnCount; i++)
             {
-                xarray[i] = Convert.ToDouble(polarChart.Series[i].Name);
-                yarray[i] = Convert.ToDouble(polarChart.Series[i].Points[e.RowIndex].YValues[0]);
+                xarray[i] = Convert.ToDouble(polarGrid.Columns[i].Name);
+                if (polarGrid[i, e.RowIndex].Value == null)
+                {
+                    polarGrid[i, e.RowIndex].Value = 0;
+                }
+                yarray[i] = Convert.ToDouble(polarGrid[i,e.RowIndex].Value);
                 rowSeries.Points.AddXY(xarray[i], yarray[i]);
             }
 
@@ -328,7 +330,7 @@ namespace Polar_Tool
             rowSeries.ChartType = SeriesChartType.Line;
             rowSeries.Color = Color.FromName("Black");
             rowSeries.Name = "rowSeries";
-//            PrintSeries("Row Series", rowSeries);
+            PrintSeries("Row Series", rowSeries);
 
             estSeries.ChartType = SeriesChartType.Line;
             estSeries.Color = Color.FromName("Red");
@@ -525,24 +527,40 @@ namespace Polar_Tool
         private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
-            int ord;
+            DataColumn newCol;
+            DataGridViewColumn gridColumn = new DataGridViewColumn();
+            List<String> listString = new List<String>();
 
-            result = MessageBox.Show("Insert column?", "Column Header Click", MessageBoxButtons.YesNo);
+            result = MessageBox.Show("Insert column 0?", "Column Header Click", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
-                // clear data from exising graph
-                polarChart.DataSource = null;
+                // add to the polar data List
+                polardata.Insert(1, listString);
+                for (int i = 0; i < polardata[1].Count; i++)
+                {
+                    polardata[1].Insert(i, "0");
+                }
 
-                //  add the data column
-                DataColumn newColumn = dt.Columns.Add();
-                newColumn.Caption = "0";
-                newColumn.ColumnName = "0";
-                newColumn.SetOrdinal(0);
+                // assign to polar grid
+                polarGrid.Columns.Insert(1,gridColumn);
+                gridColumn.Name = "0";
+                for (int i = 0; i < polarGrid.RowCount; i++)
+                {
+                    polarGrid[1, i].Value = 0;
+                }
 
-                // assign the table to the graph
-                polarChart.DataSource = dt;
+                // assign a new column to dt
+                newCol = dt.Columns.Add("0");
+                newCol.SetOrdinal(1);
+                newCol.DefaultValue = 0;
+                dt.Columns[1].DefaultValue = 0;
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    dt.Rows[1][i] = 0;
+                }
 
+                displayGrid(dt);
             }
         }
     }
