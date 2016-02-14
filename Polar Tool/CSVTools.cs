@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
+using System.Diagnostics;
 
 namespace CSVTools
 {
@@ -20,7 +21,7 @@ namespace CSVTools
             int lineCount;
 
             List<List<String>> CSVData = new List<List<String>>();
-            List<String> _t_string = new List<String>();
+            List<String> t_string = new List<String>();
 
 
             // initialize variables
@@ -59,7 +60,7 @@ namespace CSVTools
                     // the file is reached.
                     try
                     {
-                        // Console.WriteLine("CSVRead processing file " + filename);
+                        // //Console.WriteLine("CSVRead processing file " + filename);
                         TextFieldParser parser = new TextFieldParser(sr);
                         parser.TextFieldType = FieldType.Delimited;
                         parser.SetDelimiters(",", ";", "\t", " ");
@@ -75,19 +76,20 @@ namespace CSVTools
                             //Console.Write("Line " + lineCount + ": ");
 
                             // start a new line
-                            _t_string.Clear();
+                            t_string.Clear();
 
                             actCols = 0;
                             // get the data and add it to CSVData
                             foreach (string item in fields)
                             {
-                                _t_string.Add(item);
+                                //Console.Write(item);
+                                t_string.Add(item);
                                 actCols++;
                             }
 
-                            CSVData.Add(new List<String>(_t_string));
-                            Console.WriteLine("");
-                            Console.WriteLine(CSVData[lineCount]);
+                            CSVData.Add(new List<String>(t_string));
+                            //Console.WriteLine("");
+                            //Console.WriteLine(CSVData[lineCount]);
                             lineCount++;
                         }
                         actRows = lineCount;
@@ -102,8 +104,8 @@ namespace CSVTools
             catch (Exception e)
             {
                 // Let the user know what went wrong.
-                Console.WriteLine("The file could not be read:");
-                Console.WriteLine(e.Message);
+                //Console.WriteLine("The file could not be read:");
+                //Console.WriteLine(e.Message);
             }
             return CSVData;
         }
