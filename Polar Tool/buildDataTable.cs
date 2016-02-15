@@ -20,6 +20,18 @@ namespace Polar_Tool
             double dnumber;             // used for converting speed to double with 10ths only
             int inumber;                // used for converting speed to double
 
+            try
+            {
+                dt.Dispose();
+            }
+            catch (Exception)
+            {
+               // dt did not exist, do nothing
+            }
+
+            // create a new instance of the table
+            dt = new DataTable("polarDataTable");
+
             // reset and clear the datatable
             dt.Reset();
 

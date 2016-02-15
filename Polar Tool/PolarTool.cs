@@ -104,19 +104,6 @@ namespace Polar_Tool
             String filename;
             DataGridViewCellEventArgs ee = new DataGridViewCellEventArgs(0, 0);
 
-            // dispose of old dt table if it existed and create a new one
-            try
-            {
-                dt.Dispose();
-            }
-            catch (Exception)
-            {
-                // do nothing if it does not exist
-            }
-
-            // create a new instance of the table
-            dt = new DataTable("polarDataTable");
-
             // set the file open dialog file mask
             openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
 
