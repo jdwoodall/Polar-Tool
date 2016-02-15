@@ -104,6 +104,7 @@ namespace Polar_Tool
             int rowCount, colCount;
             int rowStart;                           // first valid row from polarData
 
+
             // reset the Grid display
             polarGrid.DataSource = null;
 
@@ -111,7 +112,9 @@ namespace Polar_Tool
             rowStart = firstvalidrow(polarData, cols);
 
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
-            polarGrid.DataSource = dt;
+            var dtField = polarGrid.DataSource = dt;
+
+            // check for error assigning dt
 
             // Note the next actions have to be done AFTER the data table is assigned to the Grid View
             // so the GridView will have the proper dimensions.

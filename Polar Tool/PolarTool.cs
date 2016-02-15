@@ -605,11 +605,12 @@ namespace Polar_Tool
 
                 // this had been problematic
                 cols = polarData[1].Count;
-                rows = polarData.Count + 1;
+                rows = polarData.Count;
                 Console.WriteLine("Insert @" + rows + ", " + cols);
                 polarDataPrint(polarData);
 
-                displayGrid(dt, rows, cols);
+                buildDataTable(polarData, rows, cols);
+ //               displayGrid(dt, rows, cols);
             }
         }
 
