@@ -145,6 +145,8 @@
             this.polarGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
             this.polarGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_ColumnHeader);
             this.polarGrid.ColumnHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_ColumnHeader);
+            this.polarGrid.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_RowHeader);
+            this.polarGrid.RowHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_RowHeader);
             // 
             // polarMenuStrip
             // 

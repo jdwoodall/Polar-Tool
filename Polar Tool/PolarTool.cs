@@ -302,9 +302,9 @@ namespace Polar_Tool
             // variables used for regression analysis
             const int degree = 4;  // return a 4th degree polynomial.  there are 5 results in the result vector due to the constant term.
             double[] xarray;
-            xarray = new double[polarChart.Series.Count];
+            xarray = new double[polarGrid.Columns.Count];
             double[] yarray;
-            yarray = new double[polarChart.Series.Count];
+            yarray = new double[polarGrid.Columns.Count];
             double[] p;
             double[] r;
             int maxspeed;  // maximum speed listed in the polar chart
@@ -569,12 +569,11 @@ namespace Polar_Tool
         // polarData is a List of List of Strings, <List<List<String>>.  We want the inner list to represent rows and the outlist to represent columns so we have
         // a List of rows.  However, when you use the Insert() method with a column argument, it actually inserts a new row.  I am sure this is because, like everything else 
         // in .NET, it is build to handle a list of items that are from another source, like a SQL database.  Clearly, this is not what we want here.  When we look at the 
-        // polarData data it seems organized the way I want it, but the insert functions to not work the way that seems intuitive.
+        // polarData data it seems organized the way I want it, but the insert functions do not work the way that seems intuitive.
         //
         private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
-//            DataGridViewColumn gridColumn = new DataGridViewColumn();
             List<String> listString = new List<String>();
             int rows, cols;
 
@@ -582,22 +581,21 @@ namespace Polar_Tool
 
             if (result == DialogResult.Yes)
             {
+                listString.Add("0");
 
-                for (int i = 0; i < polarData[1].Count; i++)
+                for (int i = 0; i < polarData.Count; i++)
                 {
-                    listString.Add("0");
+                    // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
+                    polarData[i].InsertRange(e.ColumnIndex + 1, listString);
                 }
-                // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
-                polarData.Insert(e.ColumnIndex+1, listString);
 
                 // this had been problematic
                 cols = polarData[1].Count;
                 rows = polarData.Count;
-                Console.WriteLine("Insert @" + rows + ", " + cols);
-                polarDataPrint(polarData);
+                //Console.WriteLine("Insert Column @ " + rows + ", " + cols);
+                //polarDataPrint(polarData);
 
                 buildDataTable(polarData, rows, cols);
- //               displayGrid(dt, rows, cols);
             }
         }
 
@@ -619,21 +617,24 @@ namespace Polar_Tool
                 {
                     listString.Add("0");
                 }
-                // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
+
+                // add a row of zeros to polarData at the cursor.  Row zero is are heading so add one to the cursor
                 polarData.Insert(e.RowIndex + 1, listString);
 
                 // this had been problematic
                 cols = polarData[1].Count;
                 rows = polarData.Count;
-                Console.WriteLine("Insert @" + rows + ", " + cols);
+                Console.WriteLine("Insert Row @ " + rows + ", " + cols);
                 polarDataPrint(polarData);
 
-                displayGrid(dt, rows, cols);
+                // rebuild the data table.
+                buildDataTable(polarData, rows, cols);
             }
         }
 
         private void polarDataPrint(List<List<string>> polarData)
         {
+            Console.WriteLine("polarData");
             for (int i = 0; i < polarData.Count; i++)
             {
                 Console.Write("Row: " + i + ". ");
