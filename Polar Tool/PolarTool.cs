@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -580,11 +579,15 @@ namespace Polar_Tool
         //
         // column header click or double click
         //
+        // polarData is a List of List of Strings, <List<List<String>>.  We want the inner list to represent rows and the outlist to represent columns so we have
+        // a List of rows.  However, when you use the Insert() method with a column argument, it actually inserts a new row.  I am sure this is because, like everything else 
+        // in .NET, it is build to handle a list of items that are from another source, like a SQL database.  Clearly, this is not what we want here.  When we look at the 
+        // polarData data it seems organized the way I want it, but the insert functions to not work the way that seems intuitive.
+        //
         private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
-            DataColumn newCol;
-            DataGridViewColumn gridColumn = new DataGridViewColumn();
+//            DataGridViewColumn gridColumn = new DataGridViewColumn();
             List<String> listString = new List<String>();
             int rows, cols;
 
@@ -602,7 +605,7 @@ namespace Polar_Tool
 
                 // this had been problematic
                 cols = polarData[1].Count;
-                rows = polarData.Count;
+                rows = polarData.Count + 1;
                 Console.WriteLine("Insert @" + rows + ", " + cols);
                 polarDataPrint(polarData);
 
@@ -616,8 +619,6 @@ namespace Polar_Tool
         private void polarGrid_RowHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
-            DataColumn newCol;
-            DataGridViewColumn gridColumn = new DataGridViewColumn();
             List<String> listString = new List<String>();
             int rows, cols;
 
@@ -625,13 +626,13 @@ namespace Polar_Tool
 
             if (result == DialogResult.Yes)
             {
-
+                // initialize the string we are going to insert
                 for (int i = 0; i < polarData[1].Count; i++)
                 {
                     listString.Add("0");
                 }
                 // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
-                polarData.Insert(e.ColumnIndex + 1, listString);
+                polarData.Insert(e.RowIndex + 1, listString);
 
                 // this had been problematic
                 cols = polarData[1].Count;
