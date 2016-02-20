@@ -83,15 +83,20 @@ namespace CSVTools
                             foreach (string item in fields)
                             {
                                 //Console.Write(item);
-                                t_string.Add(item);
-                                actCols++;
+                                // do not add empty items to string
+                                if (item != "" && item != null)
+                                {
+                                    t_string.Add(item);
+                                    actCols++;
+                                }
                             }
 
                             CSVData.Add(new List<String>(t_string));
                             //Console.WriteLine("");
                             //Console.WriteLine(CSVData[lineCount]);
                             lineCount++;
-                        }
+                        }  // while not eod
+
                         actRows = lineCount;
                     }
                     catch (Exception e)

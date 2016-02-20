@@ -51,23 +51,23 @@ namespace Polar_Tool
             }
 
             // Add the rows only.  The data is added below
-            for (rowCount = rowStart; rowCount < rows - rowStart; rowCount++)
+            for (rowCount = 0; rowCount < rows - rowStart; rowCount++)
             {
                 // add the rows using the row index
-                dt.Rows.Add(rowCount - rowStart);
+                dt.Rows.Add(rowCount);
             }
 
             // Create columns names.  Should be in the first usable row of polarData
-            // The first colulmn are the angles and used for row headings and are NOT in this table
+            // The first colulmn in polarData isthe angle and used for row headings but are NOT included in the datatable
             for (colCount = 1; colCount < cols; colCount++)
             {
-                // save some repeated calculations
+                // save some repeated calculations.  this is the index into the datatable.
                 thisCol = colCount - 1;
 
                 // Populate the Row getting the data.  There is no Row name in the DataTable Class
-                for (rowCount = rowStart; rowCount < rows - rowStart; rowCount++)
+                for (rowCount = rowStart; rowCount < rows; rowCount++)
                 {
-                    // so we don't have to compute this all the time
+                    // so we don't have to compute this all the time.  this is the index into the datatable
                     thisRow = rowCount - rowStart;
                     try
                     {
@@ -98,6 +98,9 @@ namespace Polar_Tool
             displayGrid(dt, dt.Rows.Count, dt.Columns.Count);
         }
 
+        //
+        // print the dataTable to the console
+        //
         private void printTable(DataTable dt)
         {
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -124,16 +127,15 @@ namespace Polar_Tool
             rowStart = firstvalidrow(polarData, cols);
 
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
-            var dtField = polarGrid.DataSource = dt;
+            polarGrid.DataSource = dt;
 
-            // check for error assigning dt
-
-            // Note the next actions have to be done AFTER the data table is assigned to the Grid View
+            // Note the next actions have to be done AFTER the dataTable is assigned to the Grid View
             // so the GridView will have the proper dimensions.
 
             // Copy Row labels from column 0 of polarData.  This data is not in the datatable
             // The first row in polarData is the wind speed and is skipped.
-            for (rowCount = rowStart + 1; rowCount < rows-rowStart+1; rowCount++)
+            // The dataTable does NOT include row names.  Copy them from the polarData
+            for (rowCount = rowStart + 1; rowCount < rows + 1 + rowStart; rowCount++)
             {
                 polarGrid.Rows[rowCount-rowStart-1].HeaderCell.Value = polarData[rowCount][0];
             }

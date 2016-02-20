@@ -158,14 +158,23 @@ namespace Polar_Tool
         {
             int colcount;
             int rowstart;
-                
+
             rowstart = 0;
-            for (colcount = 1; colcount < cols; colcount++)
+
+            try
             {
-                if (data[rowstart][colcount] == null || data[rowstart][colcount] == "")  // do we need to check for spaces as well?
+                for (colcount = 1; colcount < cols; colcount++)
                 {
-                    rowstart++;
+                    if (data[rowstart][colcount] == null || data[rowstart][colcount] == "")  // do we need to check for spaces as well?
+                    {
+                        rowstart++;
+                    }
                 }
+            }
+
+            catch (Exception)
+            {
+                rowstart++;
             }
             return rowstart;
         }
