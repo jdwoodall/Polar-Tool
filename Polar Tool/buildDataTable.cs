@@ -36,7 +36,7 @@ namespace Polar_Tool
             dt.Reset();
 
             // get the first valid row of the polarData
-            rowStart = firstvalidrow(polarData, cols);
+            rowStart = firstValidRow(polarData);
 
             // This just adds the columns to the table.  The data is added below.
             for (colCount = 1; colCount < cols; colCount++)
@@ -92,7 +92,7 @@ namespace Polar_Tool
             // delete the first row tha the column names came from
             dt.Rows.RemoveAt(0);
 
-            printTable(dt);
+            // printTable(dt);
 
             // display the Grid
             displayGrid(dt, dt.Rows.Count, dt.Columns.Count);
@@ -124,7 +124,7 @@ namespace Polar_Tool
             polarGrid.DataSource = null;
 
             // get the first valid row of the polarData
-            rowStart = firstvalidrow(polarData, cols);
+            rowStart = firstValidRow(polarData);
 
             // Assign to grid view.  Note this method will NOT work with a polar chart (at least that I can figure).
             polarGrid.DataSource = dt;

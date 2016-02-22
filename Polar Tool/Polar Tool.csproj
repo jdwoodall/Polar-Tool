@@ -68,6 +68,9 @@
     <Compile Include="buildDataTable.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ContextMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="CSVTools.cs" />
     <Compile Include="PolarTool.cs">
       <SubType>Form</SubType>

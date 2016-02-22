@@ -152,33 +152,35 @@ namespace Polar_Tool
         }
 
         //
-        //  this allows us to skip comments that may be in the first row of the polarData
+        //  this allows us to skip comments that may be in the first row of the polarData.
+        //  The first valid row are the wind speeds and this is what this should be pointing to.
         //
-        int firstvalidrow(List<List<String>> data, int cols)
+        int firstValidRow(List<List<String>> data)
         {
-            int colcount;
-            int rowstart;
+            int rowstart = 0;
+            int cols;
 
-            rowstart = 0;
-
-            try
+            cols = 0;
+            // this should be the largest number of columns per row
+            for (int i = 0; i < data.Count; i++)
             {
-                for (colcount = 1; colcount < cols; colcount++)
+                if (cols < data[i].Count)
                 {
-                    if (data[rowstart][colcount] == null || data[rowstart][colcount] == "")  // do we need to check for spaces as well?
-                    {
-                        rowstart++;
-                    }
+                    cols = data[i].Count;
                 }
             }
 
-            catch (Exception)
+            for (int i = 0; i < data.Count; i++)
             {
-                rowstart++;
+                if (data[i].Count < cols)
+                {
+                    rowstart++;
+                }
             }
+
             return rowstart;
         }
- 
+
         //
         //  Build the polar chart.  This is NOT the polarGrid.  This IS the polarChart that displays circles.
         //
@@ -191,7 +193,7 @@ namespace Polar_Tool
             double r;
 
             // get the first valid row
-            rowstart = firstvalidrow(polarData, cols);
+            rowstart = firstValidRow(polarData);
 
             // clear the chart - this has to be done to repopulate it with other data
             polarChart.Series.Clear();
@@ -212,8 +214,8 @@ namespace Polar_Tool
                 // add a series to the polar chart.  The first row in each column is the is the wind speed.
                 ////Console.WriteLine("Series added: " + polarData[0][colcount]);
 
-                polarSeries[colcount-1] = polarChart.Series.Add(polarData[rowstart][colcount]);
-                polarSeries[colcount-1].ChartType = SeriesChartType.Polar;
+                polarSeries[colcount - 1] = polarChart.Series.Add(polarData[rowstart][colcount]);
+                polarSeries[colcount - 1].ChartType = SeriesChartType.Polar;
 
                 //  Add the data points.  The series is added as an XY pair where X = the angle and Y = the boat speed
                 for (rowcount = rowstart + 1; rowcount < rows; rowcount++)
@@ -248,7 +250,7 @@ namespace Polar_Tool
         //
         // NOTE:  This code is not currently used.  Save it though.
         //
-        private void display_colGraph (object sender, EventArgs e, String btnText)
+        private void display_colGraph(object sender, EventArgs e, String btnText)
         {
             int firstrow;
             int numrows;
@@ -267,7 +269,7 @@ namespace Polar_Tool
             lineSeries = new Series();
 
             // Find the column name.  It should never be the first column.
-            firstrow = firstvalidrow(polarData, numcols);
+            firstrow = firstValidRow(polarData);
 
             // default to first column
             displaycolumn = 1;
@@ -287,7 +289,7 @@ namespace Polar_Tool
             lineSeries.ChartType = SeriesChartType.Spline;
 
             // add data from polarData.  The first row are headings and need to be skipped.
-            for (int rowcount = firstrow+1; rowcount < numrows; rowcount++)
+            for (int rowcount = firstrow + 1; rowcount < numrows; rowcount++)
             {
                 lineSeries.Points.AddXY(Convert.ToDouble(polarData[rowcount][displaycolumn]), Convert.ToDouble(polarData[rowcount][0]));
             }
@@ -354,7 +356,7 @@ namespace Polar_Tool
                 {
                     polarGrid[i, e.RowIndex].Value = 0;
                 }
-                yarray[i] = Convert.ToDouble(polarGrid[i,e.RowIndex].Value);
+                yarray[i] = Convert.ToDouble(polarGrid[i, e.RowIndex].Value);
                 rowSeries.Points.AddXY(xarray[i], yarray[i]);
             }
 
@@ -404,11 +406,23 @@ namespace Polar_Tool
 
         private void buildColGraph(object sender, DataGridViewCellEventArgs e)
         {
-            //  Build the chart to the right of the form.  This displays one column of data from the selected column
-            //  indicate by e.ColumnIndex
+            //  Build the chart on the right hand side of the data.
+            //  This chart shows wind angle on the vertical axis and boat speed on the X axis.
+            //  The wind angle is in the first column of the polarData while the speed is in the data fields, so we
+            //  need to display one column of data based on e.ColumnIndex.
 
-            int i;
+            // variables used for regression analysis
+            const int degree = 4;  // return a 4th degree polynomial.  there are 5 results in the result vector due to the constant term.
+            double[] xarray;
+            xarray = new double[polarData.Count];
+            double[] yarray;
+            yarray = new double[polarData.Count];
+            double[] p;
+            double[] r;
+            int minangle, maxangle;  // min and max wind angles
+
             double x, y;
+            int rows, rowStart;
 
             // if a row header is selected, the index will be -1, do nothing.
             if (e.ColumnIndex == -1)
@@ -416,37 +430,67 @@ namespace Polar_Tool
                 return;
             }
 
+            // get the location where the data starts. This DOES NOT skip the header row, only any junk before it.
+            rowStart = firstValidRow(polarData);
+
             // declare and allocate the data series.  There is is one for each maximum col of data.
             Series colSeries;
             colSeries = new Series();
             colSeries.Points.Clear();
             colSeries.YValuesPerPoint = 1;
 
+            // define a new series to plot the poly fit
+            Series estSeries;
+            estSeries = new Series();
+            estSeries.Points.Clear();
+            estSeries.YValuesPerPoint = 1;
+
             // clear the current data series
             chartColGraph.Series.Clear();
             chartColGraph.DataSource = null;
 
-            // copy the data to colSeries.  Do not assign directly from polarChart as it will mess up that graph
-            // move DOWN the column, specified e.ColumnIndex, building the data.
-            // there is not direct way to get the number of ROWS in a chart - that I can tell - only the colums, which we don't want.
-            // so we use this rather shameful method to get the data
-            i = 0;
-            while (i >= 0)
+            //  Polar data has the wind direction in column zero.
+            //  The first row is the true wind speed and is skipped for this graph.
+            //  The index coming from the GGV needs to have 1 added to it.
+            //  The first valid row will contain wind speed and needs to be skipped.
+            Console.WriteLine("Data From ColGraph.  RS = " + rowStart + ". Count = " + polarData.Count);
+            for (rows = rowStart + 1; rows < polarData.Count; rows++)
             {
-                try
+                // x is the wind angle
+                x = Convert.ToDouble(polarData[rows][0]);
+                // y is the boat speed for a given wind angle and wind speed
+                y = Convert.ToDouble(polarData[rows][e.ColumnIndex+1]);
+                colSeries.Points.AddXY(y, x);
+                Console.WriteLine("@row = " + rows + ". x = " + x + ". y = " + y);
+
+                // x and y array are for the regression
+                xarray[rows] = x;
+                yarray[rows] = y;
+            }
+
+            // compute the regression and build a series to display it.
+            p = Fit.Polynomial(xarray, yarray, degree);
+
+            // find the max speed shown in the polar chart. Used to hold the estimated speeds after the regression
+            maxangle = Convert.ToInt32(polarData[polarData.Count-1][0]);
+            minangle = Convert.ToInt32(polarData[rowStart+1][0]);
+
+            // result array from regression
+            r = new double[maxangle-minangle+1];
+
+            // compute the estimated values based on the regression.
+            // from the lowest angle included to the highest
+            for (int i = minangle; i < maxangle; i++)
+            {
+                r[i-minangle] = 0;
+                for (int j = 0; j < degree + 1; j++)
                 {
-                    x = polarChart.Series[e.ColumnIndex].Points[i].XValue;
-                    y = polarChart.Series[e.ColumnIndex].Points[i].YValues[0];
-                    // note this is assigned backwards.  We want the wind angle on Y and the speed on X
-                    colSeries.Points.AddXY(y, x);
-                    ////Console.WriteLine("@i = " + i + ". x = " + x + ". y = " + y);
-                    i++;
+                    ////Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
+                    r[i-minangle] += p[j] * Math.Pow(i, j);
+                    ////Console.WriteLine(", r[" + i + "] = " + r[i]);
                 }
-                catch (Exception)
-                {
-                    ////Console.WriteLine("Break at i = " + i);
-                    i = -1;
-                }
+                ////Console.WriteLine("r[" + i + "] = " + r[i]);
+                estSeries.Points.AddXY(r[i-minangle], i);
             }
 
             // make it appear as a line. Spline also works, but will have some dicontinuities as Msoft appears to be using
@@ -454,9 +498,20 @@ namespace Polar_Tool
             colSeries.ChartType = SeriesChartType.Line;
             colSeries.Color = Color.FromName("Black");
 
+            estSeries.ChartType = SeriesChartType.Line;
+            estSeries.Color = Color.FromName("Red");
+            estSeries.Name = "estSeries";
+            // PrintSeries("estSeries", estSeries);
+
             // this is because .NET auto range does not always work.
             chartColGraph.ChartAreas[0].AxisX.Maximum = Math.Floor(FindMaxX(colSeries) + 1.5);
+            chartColGraph.ChartAreas[0].AxisX.Minimum = 0;
+
             chartColGraph.Series.Add(colSeries);
+
+            chartColGraph.Series.Add(estSeries);
+            chartColGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.DashDotDot;
+            chartColGraph.Series["estSeries"].BorderWidth = 1;
         }
 
 
@@ -503,7 +558,7 @@ namespace Polar_Tool
             if (sin == null) { return (null); }
             Series sout = new Series();
             sout = new Series();
-            ShallowCopy(sout,sin);
+            ShallowCopy(sout, sin);
             return (sout);
         }
 
@@ -567,11 +622,6 @@ namespace Polar_Tool
             }
         }
 
-        private void rowChart_Click(object sender, EventArgs e)
-        {
-
-        }
-
         //
         // column header click or double click
         //
@@ -583,30 +633,16 @@ namespace Polar_Tool
         private void polarGrid_ColumnHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
-            List<String> listString = new List<String>();
-            int rows, cols;
 
             result = MessageBox.Show("Insert zero value column at cursor?", "Column Header Click", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
-                listString.Add("0");
-
-                for (int i = 0; i < polarData.Count; i++)
-                {
-                    // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
-                    polarData[i].InsertRange(e.ColumnIndex + 1, listString);
-                }
-
-                // this had been problematic
-                cols = polarData[1].Count;
-                rows = polarData.Count;
-                //Console.WriteLine("Insert Column @ " + rows + ", " + cols);
-                //polarDataPrint(polarData);
-
-                buildDataTable(polarData, rows, cols);
+                polarDataInsertColumn(e.ColumnIndex, "0");
             }
         }
+
+
 
         //
         // row header click or double click
@@ -614,32 +650,114 @@ namespace Polar_Tool
         private void polarGrid_RowHeader(object sender, DataGridViewCellMouseEventArgs e)
         {
             DialogResult result;
-            List<String> listString = new List<String>();
-            int rows, cols;
 
             result = MessageBox.Show("Insert zero value row at cursor?", "Row Header Click", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
-                // initialize the string we are going to insert
-                for (int i = 0; i < polarData[1].Count; i++)
-                {
-                    listString.Add("0");
-                }
-
-                // add a row of zeros to polarData at the cursor.  Row zero is are heading so add one to the cursor
-                polarData.Insert(e.RowIndex + 1, listString);
-
-                // this had been problematic
-                cols = polarData[1].Count;
-                rows = polarData.Count;
-                Console.WriteLine("Insert Row @ " + rows + ", " + cols);
-                polarDataPrint(polarData);
-
-                // rebuild the data table.
-                buildDataTable(polarData, rows, cols);
+                polarDataInsertRow(e.RowIndex, "0");
             }
         }
+
+
+
+        void polarDataInsertRow(int rowIndex, String rowLabel)
+        {
+            List<String> listString = new List<String>();
+            int rows, cols, rowStart;
+
+            // initialize the string we are going to insert
+            for (int i = 0; i < polarData[1].Count; i++)
+            {
+                listString.Add("0");
+            }
+
+            // get the location of the header row
+            rowStart = firstValidRow(polarData);
+
+            // add a row of zeros to polarData at the cursor.  Row zero is are heading so add one to the cursor.
+            // also allow for junk before the header row.
+            polarData.Insert(rowStart+rowIndex + 1, listString);
+
+            // Get the new size
+            cols = polarData[1].Count;
+            rows = polarData.Count;
+            Console.WriteLine("Insert Row @ " + rows + ", " + cols);
+            polarDataPrint(polarData);
+
+            // rebuild the data table.
+            buildDataTable(polarData, rows, cols);
+        }
+
+        // Remove a row of data
+        private void polarDataDeleteRow(int rowIndex, String rowLabel)
+        {
+            int rows, cols, count;
+
+            // Row zero is the headings so don't remove them.
+            count = polarData[rowIndex + 1].Count;
+
+            polarData.RemoveAt(rowIndex + 1);
+
+            // Get the new size
+            cols = polarData[1].Count;
+            rows = polarData.Count;
+            Console.WriteLine("Delete Row @ " + rows + ", " + cols);
+            polarDataPrint(polarData);
+
+            // rebuild the data table.
+            buildDataTable(polarData, rows, cols);
+        }
+
+        //  Insert a column of data
+        private void polarDataInsertColumn(int colIndex, String colLabel)
+        {
+            List<String> listString = new List<String>();
+            int rows, cols;
+
+            listString.Add("0");
+
+            // add the column label
+            polarData[colIndex][0] = colLabel;
+
+            for (int i = 0; i < polarData.Count; i++)
+            {
+                // add a columns of zeros to polarData at the cursor.  Column zero is are heading so add one to the cursor
+                polarData[i].InsertRange(colIndex + 1, listString);
+            }
+
+            // Get the new dimensions
+            cols = polarData[1].Count;
+            rows = polarData.Count;
+            //Console.WriteLine("Insert Column @ " + rows + ", " + cols);
+            //polarDataPrint(polarData);
+
+            // force rebuild of table
+            buildDataTable(polarData, rows, cols);
+        }
+
+
+        // Remove a column of data
+        private void polarDataDeleteColumn(int colIndex, String colLable)
+        {
+            int rows, cols;
+
+            for (int i = 0; i < polarData.Count; i++)
+            {
+                // remove the element on the ith row at the colindex+1 position
+                polarData[i].RemoveRange(colIndex + 1, 1);
+            }
+
+            // Get the new dimensions
+            cols = polarData[1].Count;
+            rows = polarData.Count;
+            //Console.WriteLine("Insert Column @ " + rows + ", " + cols);
+            //polarDataPrint(polarData);
+
+            // force rebuild of table
+            buildDataTable(polarData, rows, cols);
+        }
+
 
         private void polarDataPrint(List<List<string>> polarData)
         {

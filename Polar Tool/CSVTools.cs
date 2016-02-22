@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using Microsoft.VisualBasic.FileIO;
-using System.Diagnostics;
 
 namespace CSVTools
 {
@@ -106,7 +105,7 @@ namespace CSVTools
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Let the user know what went wrong.
                 //Console.WriteLine("The file could not be read:");
