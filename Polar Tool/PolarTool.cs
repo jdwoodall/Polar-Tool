@@ -296,224 +296,6 @@ namespace Polar_Tool
         }
 
 
-        private void polarGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // build the column graph
-            buildColGraph(sender, e);
-            //build the row graph
-            buildRowGraph(sender, e);
-        }
-
-
-        private void buildRowGraph(object sender, DataGridViewCellEventArgs e)
-        {
-            // Build the Chart under the main form.  It shows the data moving along the selected row.
-            // declare and allocate the data series.  There is is one for each maximum col of data.
-
-            // variables used for regression analysis
-            const int degree = 4;  // return a 4th degree polynomial.  there are 5 results in the result vector due to the constant term.
-            double[] xarray;
-            xarray = new double[polarGrid.Columns.Count];
-            double[] yarray;
-            yarray = new double[polarGrid.Columns.Count];
-            double[] p;
-            double[] r;
-            int maxspeed;  // maximum speed listed in the polar chart
-
-            //  if the column header is selected, the row index will be -1, do nothing.
-            if (e.RowIndex == -1)
-            {
-                return;
-            }
-
-            // find the max speed shown in the polar chart. Used to hold the estimated speeds after the regression
-            maxspeed = Convert.ToInt32(polarChart.Series[polarChart.Series.Count - 1].Name) + 1;
-
-            // result array from regression
-            r = new double[maxspeed];
-
-            // define a new series for plotting the row graph
-            Series rowSeries;
-            rowSeries = new Series();
-            rowSeries.Points.Clear();
-            rowSeries.YValuesPerPoint = 1;
-
-            // define a new series to plot the poly fit
-            Series estSeries;
-            estSeries = new Series();
-            estSeries.Points.Clear();
-            estSeries.YValuesPerPoint = 1;
-
-            // clear the current data series
-            chartRowGraph.Series.Clear();
-            chartRowGraph.DataSource = null;
-
-            // move across the polarGrid getting the data
-            for (int i = 0; i < polarGrid.ColumnCount; i++)
-            {
-                xarray[i] = Convert.ToDouble(polarGrid.Columns[i].Name);
-                if (polarGrid[i, e.RowIndex].Value == null)
-                {
-                    polarGrid[i, e.RowIndex].Value = 0;
-                }
-                yarray[i] = Convert.ToDouble(polarGrid[i, e.RowIndex].Value);
-                rowSeries.Points.AddXY(xarray[i], yarray[i]);
-            }
-
-            // compute the regression and build a series to display it.
-            p = Fit.Polynomial(xarray, yarray, degree);
-
-            // compute the estimated values based on the regression.
-            for (int i = 0; i < maxspeed; i++)
-            {
-                r[i] = 0;
-                for (int j = 0; j < degree + 1; j++)
-                {
-                    ////Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
-                    r[i] += p[j] * Math.Pow(i, j);
-                    ////Console.WriteLine(", r[" + i + "] = " + r[i]);
-                }
-                ////Console.WriteLine("r[" + i + "] = " + r[i]);
-                estSeries.Points.AddXY(i, r[i]);
-            }
-
-
-            // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
-            // spine fitting appearing to be piecewise.
-            rowSeries.ChartType = SeriesChartType.Line;
-            rowSeries.Color = Color.FromName("Black");
-            rowSeries.Name = "rowSeries";
-            // PrintSeries("Row Series", rowSeries);
-
-            estSeries.ChartType = SeriesChartType.Line;
-            estSeries.Color = Color.FromName("Red");
-            estSeries.Name = "estSeries";
-            // PrintSeries("estSeries", estSeries);
-
-
-            //  fix the broken .NET autorange function.
-            chartRowGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(rowSeries) + 1.5);
-            chartRowGraph.ChartAreas[0].AxisX.Minimum = 0;
-
-            // set the line properties (yes, it really is Border...) and add the two chart series
-            chartRowGraph.Series.Add(rowSeries);
-            chartRowGraph.Series["rowSeries"].BorderWidth = 1;
-            chartRowGraph.Series.Add(estSeries);
-            chartRowGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.DashDotDot;
-            chartRowGraph.Series["estSeries"].BorderWidth = 1;
-        }
-
-
-        private void buildColGraph(object sender, DataGridViewCellEventArgs e)
-        {
-            //  Build the chart on the right hand side of the data.
-            //  This chart shows wind angle on the vertical axis and boat speed on the X axis.
-            //  The wind angle is in the first column of the polarData while the speed is in the data fields, so we
-            //  need to display one column of data based on e.ColumnIndex.
-
-            // variables used for regression analysis
-            const int degree = 4;  // return a 4th degree polynomial.  there are 5 results in the result vector due to the constant term.
-            double[] xarray;
-            xarray = new double[polarData.Count];
-            double[] yarray;
-            yarray = new double[polarData.Count];
-            double[] p;
-            double[] r;
-            int minangle, maxangle;  // min and max wind angles
-
-            double x, y;
-            int rows, rowStart;
-
-            // if a row header is selected, the index will be -1, do nothing.
-            if (e.ColumnIndex == -1)
-            {
-                return;
-            }
-
-            // get the location where the data starts. This DOES NOT skip the header row, only any junk before it.
-            rowStart = firstValidRow(polarData);
-
-            // declare and allocate the data series.  There is is one for each maximum col of data.
-            Series colSeries;
-            colSeries = new Series();
-            colSeries.Points.Clear();
-            colSeries.YValuesPerPoint = 1;
-
-            // define a new series to plot the poly fit
-            Series estSeries;
-            estSeries = new Series();
-            estSeries.Points.Clear();
-            estSeries.YValuesPerPoint = 1;
-
-            // clear the current data series
-            chartColGraph.Series.Clear();
-            chartColGraph.DataSource = null;
-
-            //  Polar data has the wind direction in column zero.
-            //  The first row is the true wind speed and is skipped for this graph.
-            //  The index coming from the GGV needs to have 1 added to it.
-            //  The first valid row will contain wind speed and needs to be skipped.
-            Console.WriteLine("Data From ColGraph.  RS = " + rowStart + ". Count = " + polarData.Count);
-            for (rows = rowStart + 1; rows < polarData.Count; rows++)
-            {
-                // x is the wind angle
-                x = Convert.ToDouble(polarData[rows][0]);
-                // y is the boat speed for a given wind angle and wind speed
-                y = Convert.ToDouble(polarData[rows][e.ColumnIndex+1]);
-                colSeries.Points.AddXY(y, x);
-                Console.WriteLine("@row = " + rows + ". x = " + x + ". y = " + y);
-
-                // x and y array are for the regression
-                xarray[rows] = x;
-                yarray[rows] = y;
-            }
-
-            // compute the regression and build a series to display it.
-            p = Fit.Polynomial(xarray, yarray, degree);
-
-            // find the max speed shown in the polar chart. Used to hold the estimated speeds after the regression
-            maxangle = Convert.ToInt32(polarData[polarData.Count-1][0]);
-            minangle = Convert.ToInt32(polarData[rowStart+1][0]);
-
-            // result array from regression
-            r = new double[maxangle-minangle+1];
-
-            // compute the estimated values based on the regression.
-            // from the lowest angle included to the highest
-            for (int i = minangle; i < maxangle; i++)
-            {
-                r[i-minangle] = 0;
-                for (int j = 0; j < degree + 1; j++)
-                {
-                    ////Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
-                    r[i-minangle] += p[j] * Math.Pow(i, j);
-                    ////Console.WriteLine(", r[" + i + "] = " + r[i]);
-                }
-                ////Console.WriteLine("r[" + i + "] = " + r[i]);
-                estSeries.Points.AddXY(r[i-minangle], i);
-            }
-
-            // make it appear as a line. Spline also works, but will have some dicontinuities as Msoft appears to be using
-            // a piecewise spline rather than a Nurb.  NEXT UP - Find a decent NURB library.
-            colSeries.ChartType = SeriesChartType.Line;
-            colSeries.Color = Color.FromName("Black");
-
-            estSeries.ChartType = SeriesChartType.Line;
-            estSeries.Color = Color.FromName("Red");
-            estSeries.Name = "estSeries";
-            // PrintSeries("estSeries", estSeries);
-
-            // this is because .NET auto range does not always work.
-            chartColGraph.ChartAreas[0].AxisX.Maximum = Math.Floor(FindMaxX(colSeries) + 1.5);
-            chartColGraph.ChartAreas[0].AxisX.Minimum = 0;
-
-            chartColGraph.Series.Add(colSeries);
-
-            chartColGraph.Series.Add(estSeries);
-            chartColGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.DashDotDot;
-            chartColGraph.Series["estSeries"].BorderWidth = 1;
-        }
-
 
         // Find the maximum value of X in the Series that is passed.  This could be an extension to the Series class.
         private double FindMaxX(Series s)
@@ -604,6 +386,225 @@ namespace Polar_Tool
             }
         }
 
+        private void buildRowGraph(object sender, DataGridViewCellEventArgs e)
+        {
+            // Build the Chart under the main form.  It shows the data moving along the selected row.
+            // declare and allocate the data series.  There is is one for each maximum col of data.
+            // e contains the column and row index for the selected cell in the DGV and needs to have 1 added to it.
+
+            // variables used for regression analysis
+            const int degree = 7;  // the degree of the polynomial.  there are degree+1 results in the result vector due to the constant term.
+            double[] xarray;
+            xarray = new double[polarData.Count];
+            double[] yarray;
+            yarray = new double[polarData.Count];
+            double[] p;
+            double[] r;
+            int maxspeed;  // maximum speed listed in the polar chart
+            int rowStart;
+
+            //  if the column header is selected, the row index will be -1, do nothing.
+            if (e.RowIndex == -1)
+            {
+                return;
+            }
+
+            // get the location where the data starts. This DOES NOT skip the header row, only any junk before it.
+            rowStart = firstValidRow(polarData);
+
+            // find the max speed shown in the polar data. Used to hold the estimated speeds after the regression
+            // boat speeds are in the first valid row of polarData and we need the last entry.
+            maxspeed = Convert.ToInt32(polarData[rowStart][polarData[rowStart].Count - 1]) + 1;
+
+            // result array from regression
+            r = new double[maxspeed];
+
+            // define a new series for plotting the row graph
+            Series rowSeries;
+            rowSeries = new Series();
+            rowSeries.Points.Clear();
+            rowSeries.YValuesPerPoint = 1;
+
+            // define a new series to plot the poly fit
+            Series estSeries;
+            estSeries = new Series();
+            estSeries.Points.Clear();
+            estSeries.YValuesPerPoint = 1;
+
+            // clear the current data series
+            chartRowGraph.Series.Clear();
+            chartRowGraph.DataSource = null;
+
+            // move across polarData getting the data
+            // first column is wind angle so skip it.
+            for (int i = 1; i < polarData[rowStart].Count; i++)
+            {
+                // Xarray holds the windspeed which is in the first row of polardata
+                xarray[i] = Convert.ToDouble(polarData[rowStart][i]);
+
+                // Yarray holds the boat speed from the field of polarData
+                if (polarData[e.RowIndex+1][i] == null)
+                {
+                    polarData[e.RowIndex+1][i] = "0";
+                }
+                yarray[i] = Convert.ToDouble(polarData[e.RowIndex+1][i]);
+                rowSeries.Points.AddXY(xarray[i], yarray[i]);
+            }
+
+            // compute the regression and build a series to display it.
+            p = Fit.Polynomial(xarray, yarray, degree);
+
+            // compute the estimated values based on the regression.
+            for (int i = 0; i < maxspeed; i++)
+            {
+                r[i] = 0;
+                for (int j = 0; j < degree + 1; j++)
+                {
+                    ////Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
+                    r[i] += p[j] * Math.Pow(i, j);
+                    ////Console.WriteLine(", r[" + i + "] = " + r[i]);
+                }
+                ////Console.WriteLine("r[" + i + "] = " + r[i]);
+                estSeries.Points.AddXY(i, r[i]);
+            }
+
+
+            // Set the chart to type "Line".  Could also be a spline, but there will be discontinuities due to msoft
+            // spine fitting appearing to be piecewise.
+            rowSeries.ChartType = SeriesChartType.Line;
+            rowSeries.Color = Color.FromName("Black");
+            rowSeries.Name = "rowSeries";
+            // PrintSeries("Row Series", rowSeries);
+
+            estSeries.ChartType = SeriesChartType.Line;
+            estSeries.Color = Color.FromName("Red");
+            estSeries.Name = "estSeries";
+            // PrintSeries("estSeries", estSeries);
+
+
+            //  fix the broken .NET autorange function.
+            chartRowGraph.ChartAreas[0].AxisY.Maximum = Math.Floor(FindMaxY(rowSeries) + 1.5);
+            chartRowGraph.ChartAreas[0].AxisX.Minimum = 0;
+
+            // set the line properties (yes, it really is Border...) and add the two chart series
+            chartRowGraph.Series.Add(rowSeries);
+            chartRowGraph.Series["rowSeries"].BorderWidth = 1;
+            chartRowGraph.Series.Add(estSeries);
+            chartRowGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.DashDotDot;
+            chartRowGraph.Series["estSeries"].BorderWidth = 1;
+        }
+
+
+        private void buildColGraph(object sender, DataGridViewCellEventArgs e)
+        {
+            //  Build the chart on the right hand side of the data.
+            //  This chart shows wind angle on the vertical axis and boat speed on the X axis.
+            //  The wind angle is in the first column of the polarData while the speed is in the data fields, so we
+            //  need to display one column of data based on e.ColumnIndex.
+
+            // variables used for regression analysis
+            const int degree = 7;  // the degree of the polynomial.  there are degree+1 results in the result vector due to the constant term.
+            double[] xarray;
+            xarray = new double[polarData.Count];
+            double[] yarray;
+            yarray = new double[polarData.Count];
+            double[] p;
+            double[] r;
+            int minangle, maxangle;  // min and max wind angles
+
+            double x, y;
+            int rows, rowStart;
+
+            // if a row header is selected, the index will be -1, do nothing.
+            if (e.ColumnIndex == -1)
+            {
+                return;
+            }
+
+            // get the location where the data starts. This DOES NOT skip the header row, only any junk before it.
+            rowStart = firstValidRow(polarData);
+
+            // declare and allocate the data series.  There is is one for each maximum col of data.
+            Series colSeries;
+            colSeries = new Series();
+            colSeries.Points.Clear();
+            colSeries.YValuesPerPoint = 1;
+
+            // define a new series to plot the poly fit
+            Series estSeries;
+            estSeries = new Series();
+            estSeries.Points.Clear();
+            estSeries.YValuesPerPoint = 1;
+
+            // clear the current data series
+            chartColGraph.Series.Clear();
+            chartColGraph.DataSource = null;
+
+            //  Polar data has the wind direction in column zero.
+            //  The first row is the true wind speed and is skipped for this graph.
+            //  The index coming from the GGV needs to have 1 added to it.
+            //  The first valid row will contain wind speed and needs to be skipped.
+            Console.WriteLine("Data From ColGraph.  RS = " + rowStart + ". Count = " + polarData.Count);
+            for (rows = rowStart + 1; rows < polarData.Count; rows++)
+            {
+                // x is the wind angle
+                x = Convert.ToDouble(polarData[rows][0]);
+                // y is the boat speed for a given wind angle and wind speed
+                y = Convert.ToDouble(polarData[rows][e.ColumnIndex + 1]);
+                colSeries.Points.AddXY(y, x);
+                Console.WriteLine("@row = " + rows + ". x = " + x + ". y = " + y);
+
+                // x and y array are for the regression
+                xarray[rows] = x;
+                yarray[rows] = y;
+            }
+
+            // compute the regression and build a series to display it.
+            p = Fit.Polynomial(xarray, yarray, degree);
+
+            // find the max speed shown in the polar chart. Used to hold the estimated speeds after the regression
+            maxangle = Convert.ToInt32(polarData[polarData.Count - 1][0]);
+            minangle = Convert.ToInt32(polarData[rowStart + 1][0]);
+
+            // result array from regression
+            r = new double[maxangle - minangle + 1];
+
+            // compute the estimated values based on the regression.
+            // from the lowest angle included to the highest
+            for (int i = minangle; i < maxangle; i++)
+            {
+                r[i - minangle] = 0;
+                for (int j = 0; j < degree + 1; j++)
+                {
+                    ////Console.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
+                    r[i - minangle] += p[j] * Math.Pow(i, j);
+                    ////Console.WriteLine(", r[" + i + "] = " + r[i]);
+                }
+                ////Console.WriteLine("r[" + i + "] = " + r[i]);
+                estSeries.Points.AddXY(r[i - minangle], i);
+            }
+
+            // make it appear as a line. Spline also works, but will have some dicontinuities as Msoft appears to be using
+            // a piecewise spline rather than a Nurb.  NEXT UP - Find a decent NURB library.
+            colSeries.ChartType = SeriesChartType.Line;
+            colSeries.Color = Color.FromName("Black");
+
+            estSeries.ChartType = SeriesChartType.Line;
+            estSeries.Color = Color.FromName("Red");
+            estSeries.Name = "estSeries";
+            // PrintSeries("estSeries", estSeries);
+
+            // this is because .NET auto range does not always work.
+            chartColGraph.ChartAreas[0].AxisX.Maximum = Math.Floor(FindMaxX(colSeries) + 1.5);
+            chartColGraph.ChartAreas[0].AxisX.Minimum = 0;
+
+            chartColGraph.Series.Add(colSeries);
+
+            chartColGraph.Series.Add(estSeries);
+            chartColGraph.Series["estSeries"].BorderDashStyle = ChartDashStyle.DashDotDot;
+            chartColGraph.Series["estSeries"].BorderWidth = 1;
+        }
+
 
         //
         // swaps the X and Y values in the passed series
@@ -678,6 +679,9 @@ namespace Polar_Tool
             // add a row of zeros to polarData at the cursor.  Row zero is are heading so add one to the cursor.
             // also allow for junk before the header row.
             polarData.Insert(rowStart+rowIndex + 1, listString);
+
+            // add the heading
+            polarData[rowStart + rowIndex + 1][0] = rowLabel;
 
             // Get the new size
             cols = polarData[1].Count;
@@ -771,6 +775,25 @@ namespace Polar_Tool
                 }
                 Console.WriteLine("");
             }
+        }
+
+
+        private void polarGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+
+            // build the column graph
+            buildColGraph(sender, e);
+            //build the row graph
+            buildRowGraph(sender, e);
+
+            //polarData[e.RowIndex][e.ColumnIndex] = polarGrid[e.ColumnIndex, e.RowIndex].Value.ToString();
+
+        }
+
+        private void polarGridCellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            buildColGraph(sender, e);
+            buildRowGraph(sender, e);
         }
     }
 }

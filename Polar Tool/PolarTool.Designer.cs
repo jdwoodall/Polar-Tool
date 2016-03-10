@@ -60,13 +60,13 @@
             this.viewStripPolarTable = new System.Windows.Forms.ToolStripMenuItem();
             this.polarGridGroup = new System.Windows.Forms.GroupBox();
             this.insDelGroupBox = new System.Windows.Forms.GroupBox();
+            this.insDelHeadingValue = new System.Windows.Forms.MaskedTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.radioBtnIns = new System.Windows.Forms.RadioButton();
             this.radioBtnDel = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.radioBtnCol = new System.Windows.Forms.RadioButton();
             this.radioBtnRow = new System.Windows.Forms.RadioButton();
-            this.insDelHeadingValue = new System.Windows.Forms.TextBox();
             this.colRowHeading = new System.Windows.Forms.Label();
             this.insDelBtnCancel = new System.Windows.Forms.Button();
             this.insDelBtnOK = new System.Windows.Forms.Button();
@@ -137,6 +137,7 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.polarGrid.DefaultCellStyle = dataGridViewCellStyle2;
             this.polarGrid.Location = new System.Drawing.Point(0, 19);
+            this.polarGrid.MultiSelect = false;
             this.polarGrid.Name = "polarGrid";
             this.polarGrid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -167,13 +168,8 @@
             this.polarGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.polarGrid.Size = new System.Drawing.Size(826, 449);
             this.polarGrid.TabIndex = 4;
-            this.polarGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
-            this.polarGrid.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
-            this.polarGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellContentClick);
-            this.polarGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_ColumnHeader);
-            this.polarGrid.ColumnHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_ColumnHeader);
-            this.polarGrid.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_RowHeader);
-            this.polarGrid.RowHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.polarGrid_RowHeader);
+            this.polarGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGridCellClick);
+            this.polarGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.polarGrid_CellValueChanged);
             // 
             // contextMenuStrip1
             // 
@@ -196,14 +192,14 @@
             // ToolStripMenuItemInsRow
             // 
             this.ToolStripMenuItemInsRow.Name = "ToolStripMenuItemInsRow";
-            this.ToolStripMenuItemInsRow.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItemInsRow.Size = new System.Drawing.Size(117, 22);
             this.ToolStripMenuItemInsRow.Text = "Row";
             this.ToolStripMenuItemInsRow.Click += new System.EventHandler(this.ToolStripMenuItemInsRow_Click);
             // 
             // ToolStripMenuItemInsCol
             // 
             this.ToolStripMenuItemInsCol.Name = "ToolStripMenuItemInsCol";
-            this.ToolStripMenuItemInsCol.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItemInsCol.Size = new System.Drawing.Size(117, 22);
             this.ToolStripMenuItemInsCol.Text = "Column";
             this.ToolStripMenuItemInsCol.Click += new System.EventHandler(this.ToolStripMenuItemInsCol_Click);
             // 
@@ -219,14 +215,14 @@
             // ToolStripMenuItemDelRow
             // 
             this.ToolStripMenuItemDelRow.Name = "ToolStripMenuItemDelRow";
-            this.ToolStripMenuItemDelRow.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItemDelRow.Size = new System.Drawing.Size(117, 22);
             this.ToolStripMenuItemDelRow.Text = "Row";
             this.ToolStripMenuItemDelRow.Click += new System.EventHandler(this.ToolStripMenuItemDelRow_Click);
             // 
             // ToolStripMenuItemDelCol
             // 
             this.ToolStripMenuItemDelCol.Name = "ToolStripMenuItemDelCol";
-            this.ToolStripMenuItemDelCol.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItemDelCol.Size = new System.Drawing.Size(117, 22);
             this.ToolStripMenuItemDelCol.Text = "Column";
             this.ToolStripMenuItemDelCol.Click += new System.EventHandler(this.ToolStripMenuItemDelCol_Click);
             // 
@@ -327,9 +323,9 @@
             // 
             // insDelGroupBox
             // 
+            this.insDelGroupBox.Controls.Add(this.insDelHeadingValue);
             this.insDelGroupBox.Controls.Add(this.panel2);
             this.insDelGroupBox.Controls.Add(this.panel1);
-            this.insDelGroupBox.Controls.Add(this.insDelHeadingValue);
             this.insDelGroupBox.Controls.Add(this.colRowHeading);
             this.insDelGroupBox.Controls.Add(this.insDelBtnCancel);
             this.insDelGroupBox.Controls.Add(this.insDelBtnOK);
@@ -341,6 +337,15 @@
             this.insDelGroupBox.TabStop = false;
             this.insDelGroupBox.Text = "insDelGroupBox";
             this.insDelGroupBox.Visible = false;
+            // 
+            // insDelHeadingValue
+            // 
+            this.insDelHeadingValue.Location = new System.Drawing.Point(160, 105);
+            this.insDelHeadingValue.Mask = "000";
+            this.insDelHeadingValue.Name = "insDelHeadingValue";
+            this.insDelHeadingValue.Size = new System.Drawing.Size(100, 22);
+            this.insDelHeadingValue.TabIndex = 10;
+            this.insDelHeadingValue.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel2
             // 
@@ -403,16 +408,6 @@
             this.radioBtnRow.TabStop = true;
             this.radioBtnRow.Text = "Row";
             this.radioBtnRow.UseVisualStyleBackColor = true;
-            // 
-            // insDelHeadingValue
-            // 
-            this.insDelHeadingValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.insDelHeadingValue.Location = new System.Drawing.Point(185, 99);
-            this.insDelHeadingValue.Name = "insDelHeadingValue";
-            this.insDelHeadingValue.Size = new System.Drawing.Size(75, 22);
-            this.insDelHeadingValue.TabIndex = 1;
-            this.insDelHeadingValue.Text = "0.0";
-            this.insDelHeadingValue.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // colRowHeading
             // 
@@ -555,7 +550,6 @@
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fitToolStripMenuItem;
         private System.Windows.Forms.GroupBox insDelGroupBox;
-        private System.Windows.Forms.TextBox insDelHeadingValue;
         private System.Windows.Forms.Label colRowHeading;
         private System.Windows.Forms.Button insDelBtnCancel;
         private System.Windows.Forms.Button insDelBtnOK;
@@ -567,6 +561,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemDelRow;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemDelCol;
+        private System.Windows.Forms.MaskedTextBox insDelHeadingValue;
     }
 }
 
