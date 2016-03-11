@@ -96,38 +96,39 @@ namespace Polar_Tool
             polarChart.Show();
         }
 
+
+        //
+        //  File -> Save
+        //
+        private void fileStripSave_Click(object sender, EventArgs e)
+        {
+            int items;
+
+            items = csvt.CSVWrite(polarData);
+            if (items <= 0)
+            {
+                MessageBox.Show("No items written.");
+            }
+            else
+            {
+                MessageBox.Show(items + " items written.");
+            }
+        }
+
+
+
         //
         //  File -> Open
         //
         private void fileStripOpen_Click(object sender, EventArgs e)
         {
-            String filename;
+            String fileName;
             DataGridViewCellEventArgs ee = new DataGridViewCellEventArgs(0, 0);
-
-            // set the file open dialog file mask
-            openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                filename = openFileDialog1.FileName;
-                this.Text = "Polar Tool: " + filename;
-            }
-            else
-            {
-                // need error handling here
-                MessageBox.Show(openFileDialog1.FileName.ToString() + " can not be opened.");
-                filename = "";
-            }
-
-            //  If the file name can not be opened, return.
-            if (filename == "")
-            {
-                return;
-            }
 
             // this will read the CSV file into a two dimensional list called polarData.  It is declared as List<List<String>>
             polarData.Clear();
-            polarData = csvt.CSVRead(filename);
+            polarData = csvt.CSVRead(out fileName);
+            this.Text = "CSV Tool: " + fileName;
 
             // build the Grid and Polar Charts
             buildDataTable(polarData, csvt.actRows, csvt.actCols);
@@ -544,7 +545,7 @@ namespace Polar_Tool
             //  The first row is the true wind speed and is skipped for this graph.
             //  The index coming from the GGV needs to have 1 added to it.
             //  The first valid row will contain wind speed and needs to be skipped.
-            Console.WriteLine("Data From ColGraph.  RS = " + rowStart + ". Count = " + polarData.Count);
+            //Console.WriteLine("Data From ColGraph.  RS = " + rowStart + ". Count = " + polarData.Count);
             for (rows = rowStart + 1; rows < polarData.Count; rows++)
             {
                 // x is the wind angle
@@ -552,7 +553,7 @@ namespace Polar_Tool
                 // y is the boat speed for a given wind angle and wind speed
                 y = Convert.ToDouble(polarData[rows][e.ColumnIndex + 1]);
                 colSeries.Points.AddXY(y, x);
-                Console.WriteLine("@row = " + rows + ". x = " + x + ". y = " + y);
+                //Console.WriteLine("@row = " + rows + ". x = " + x + ". y = " + y);
 
                 // x and y array are for the regression
                 xarray[rows] = x;
@@ -794,6 +795,11 @@ namespace Polar_Tool
         {
             buildColGraph(sender, e);
             buildRowGraph(sender, e);
+        }
+
+        private void polarMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

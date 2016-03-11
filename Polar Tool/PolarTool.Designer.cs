@@ -244,6 +244,7 @@
             this.polarMenuStrip.Size = new System.Drawing.Size(1064, 24);
             this.polarMenuStrip.TabIndex = 2;
             this.polarMenuStrip.Text = "polarMenuStrip";
+            this.polarMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.polarMenuStrip_ItemClicked);
             // 
             // fileToolStrip
             // 
@@ -268,6 +269,7 @@
             this.fileStripSave.Name = "fileStripSave";
             this.fileStripSave.Size = new System.Drawing.Size(103, 22);
             this.fileStripSave.Text = "Save";
+            this.fileStripSave.Click += new System.EventHandler(this.fileStripSave_Click);
             // 
             // fileStripExit
             // 

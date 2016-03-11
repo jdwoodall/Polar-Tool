@@ -12,32 +12,112 @@ namespace CSVTools
         public int actRows { get; private set; }
         public int actCols { get; private set; }
 
-        public List<List<string>> CSVRead(string filename)
+        //
+        // define the writer class.  returns the number of tokens written.
+        //
+        public int CSVWrite(List<List<String>> data)
+        {
+            String fileName;
+            int items = 0;
+
+
+            // Displays a SaveFileDialog so the user can save the csv file
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "CSV File|*.csv|Polar File|*.pol|Text File|*.txt";
+            saveFileDialog1.Title = "Save a CSV File";
+            saveFileDialog1.ShowDialog();
+
+            fileName = saveFileDialog1.FileName;
+
+            // If the file name is not an empty string open it for saving.
+            if (fileName == "")
+            {
+                return 0;
+            }
+
+            // Saves the Polar data via a FileStream created by the OpenFile method.
+            FileStream fs = (FileStream)saveFileDialog1.OpenFile();
+            StreamWriter sw = new StreamWriter(fs);
+ 
+            // Write and display lines from the data until the end of 
+            // the data is reached.
+            try
+            {
+
+                Console.WriteLine("CSVWrite processing file " + fileName);
+                items = 0;
+
+                foreach (var list in data)
+                {
+                    foreach(var token in list)
+                    {
+                        items++;
+                        sw.Write(token + ",");
+                        //Console.Write(token + ",");
+                    }
+                    sw.WriteLine();
+                    //Console.WriteLine();
+                }
+                sw.Flush();
+                sw.Close();
+            }
+
+            catch (Exception e)
+            {
+                MessageBox.Show("Writestream returned error " + e.Message, " in CSVWrite.");
+                throw;
+            }
+
+            fs.Close();
+            return items;
+        }
+
+
+        // this is the reader.  it explicitely trims and filters the imput.  
+        // if the incoming data is not true csv data or is delimited by spaces,
+        // it may or may not work correctly, but seems to work OK in that case.
+        // it would be much better if the data was filtered to insert comma's or 
+        // something instead of spaces.
+
+        //  CSV does not have a universal comment character, so this is not yet
+        //  implemented.  However, I am considering use a * for a comment.  This
+        //  is not yet implemented.
+
+        public List<List<string>> CSVRead(out String fileName)
         {
             List<string[]> parsedData = new List<string[]>();
             String[] fields;
-
+            DialogResult dialogStatus;
             int lineCount;
-
             List<List<String>> CSVData = new List<List<String>>();
             List<String> t_string = new List<String>();
 
+            // Displays a openFileDialog so can open the polar file
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
+            // openFileDialog1.Filter = "CSV File|*.csv|Polar File|*.pol|Text File|*.txt";
+            openFileDialog1.Title = "Open a CSV File";
+            dialogStatus = openFileDialog1.ShowDialog();
+
+            if (dialogStatus == DialogResult.OK)
+            {
+                fileName = openFileDialog1.FileName;
+            }
+            else
+            {
+                // need error handling here
+                MessageBox.Show(openFileDialog1.FileName.ToString() + " can not be opened.");
+                fileName = "";
+                return null;
+            }
 
             // initialize variables
             actRows = 0;
             actCols = 0;
 
-            // make sure the file exists
-            if (!File.Exists(filename))
-            {
-                MessageBox.Show("File " + filename + "does not exists.", "CSVRead");
-                return null;
-            }
-
-
             try
             {
-                File.OpenRead(filename);
+                File.OpenRead(fileName);
             }
             catch (IOException)
             {
@@ -45,21 +125,21 @@ namespace CSVTools
             }
             finally
             {
-                File.OpenRead(filename);
+                File.OpenRead(fileName);
             }
 
             try
             {
                 // Create an instance of StreamReader to read from a file.
                 // The using statement also closes the StreamReader.
-                using (StreamReader sr = new StreamReader(filename))
+                using (StreamReader sr = new StreamReader(fileName))
                 {
 
                     // Read and display lines from the file until the end of 
                     // the file is reached.
                     try
                     {
-                        // //Console.WriteLine("CSVRead processing file " + filename);
+                        // //Console.WriteLine("CSVRead processing file " + fileName);
                         TextFieldParser parser = new TextFieldParser(sr);
                         parser.TextFieldType = FieldType.Delimited;
                         parser.SetDelimiters(",", ";", "\t", " ");
@@ -103,6 +183,8 @@ namespace CSVTools
                         MessageBox.Show("Parser returned error " + e.Message, " in CSVRead.");
                         throw;
                     }
+                    // close the streamreader
+                    sr.Close();
                 }
             }
             catch (Exception)
