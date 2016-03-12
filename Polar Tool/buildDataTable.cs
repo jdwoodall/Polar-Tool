@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Polar_Tool
@@ -105,12 +106,12 @@ namespace Polar_Tool
         {
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                Console.Write("Row: " + i + " ");
+                Debug.Write("Row: " + i + " ");
                 for (int j = 0; j < dt.Columns.Count; j++)
                 {
-                    Console.Write(j + ": " + dt.Rows[i][j] + ", ");
+                    Debug.Write(j + ": " + dt.Rows[i][j] + ", ");
                 }
-                Console.WriteLine("");
+                Debug.WriteLine("");
             }
         }
 

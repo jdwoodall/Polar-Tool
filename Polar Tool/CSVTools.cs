@@ -8,7 +8,6 @@ namespace CSVTools
 {
     public class CSVTools
     {
-
         public int actRows { get; private set; }
         public int actCols { get; private set; }
 
@@ -19,7 +18,6 @@ namespace CSVTools
         {
             String fileName;
             int items = 0;
-
 
             // Displays a SaveFileDialog so the user can save the csv file
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -38,30 +36,28 @@ namespace CSVTools
             // Saves the Polar data via a FileStream created by the OpenFile method.
             FileStream fs = (FileStream)saveFileDialog1.OpenFile();
             StreamWriter sw = new StreamWriter(fs);
- 
-            // Write and display lines from the data until the end of 
+
+            // Write and display lines from the data until the end of
             // the data is reached.
             try
             {
-
-                Console.WriteLine("CSVWrite processing file " + fileName);
+                //Debug.WriteLine("CSVWrite processing file " + fileName);
                 items = 0;
 
                 foreach (var list in data)
                 {
-                    foreach(var token in list)
+                    foreach (var token in list)
                     {
                         items++;
                         sw.Write(token + ",");
-                        //Console.Write(token + ",");
+                        //Debug.Write(token + ",");
                     }
                     sw.WriteLine();
-                    //Console.WriteLine();
+                    //Debug.WriteLine();
                 }
                 sw.Flush();
                 sw.Close();
             }
-
             catch (Exception e)
             {
                 MessageBox.Show("Writestream returned error " + e.Message, " in CSVWrite.");
@@ -72,11 +68,10 @@ namespace CSVTools
             return items;
         }
 
-
-        // this is the reader.  it explicitely trims and filters the imput.  
+        // this is the reader.  it explicitly trims and filters the input.
         // if the incoming data is not true csv data or is delimited by spaces,
         // it may or may not work correctly, but seems to work OK in that case.
-        // it would be much better if the data was filtered to insert comma's or 
+        // it would be much better if the data was filtered to insert comma's or
         // something instead of spaces.
 
         //  CSV does not have a universal comment character, so this is not yet
@@ -95,7 +90,6 @@ namespace CSVTools
             // Displays a openFileDialog so can open the polar file
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "CSV files(*.csv, *.txt, *.pol)|*.csv;*.txt;*.pol|All files(*.*)|*.*";
-            // openFileDialog1.Filter = "CSV File|*.csv|Polar File|*.pol|Text File|*.txt";
             openFileDialog1.Title = "Open a CSV File";
             dialogStatus = openFileDialog1.ShowDialog();
 
@@ -134,12 +128,11 @@ namespace CSVTools
                 // The using statement also closes the StreamReader.
                 using (StreamReader sr = new StreamReader(fileName))
                 {
-
-                    // Read and display lines from the file until the end of 
+                    // Read and display lines from the file until the end of
                     // the file is reached.
                     try
                     {
-                        // //Console.WriteLine("CSVRead processing file " + fileName);
+                        // //Debug.WriteLine("CSVRead processing file " + fileName);
                         TextFieldParser parser = new TextFieldParser(sr);
                         parser.TextFieldType = FieldType.Delimited;
                         parser.SetDelimiters(",", ";", "\t", " ");
@@ -152,7 +145,7 @@ namespace CSVTools
                             fields = parser.ReadFields();
                             parsedData.Add(fields);
 
-                            //Console.Write("Line " + lineCount + ": ");
+                            //Debug.Write("Line " + lineCount + ": ");
 
                             // start a new line
                             t_string.Clear();
@@ -161,7 +154,7 @@ namespace CSVTools
                             // get the data and add it to CSVData
                             foreach (string item in fields)
                             {
-                                //Console.Write(item);
+                                //Debug.Write(item);
                                 // do not add empty items to string
                                 if (item != "" && item != null)
                                 {
@@ -171,8 +164,8 @@ namespace CSVTools
                             }
 
                             CSVData.Add(new List<String>(t_string));
-                            //Console.WriteLine("");
-                            //Console.WriteLine(CSVData[lineCount]);
+                            //Debug.WriteLine("");
+                            //Debug.WriteLine(CSVData[lineCount]);
                             lineCount++;
                         }  // while not eod
 
@@ -190,8 +183,8 @@ namespace CSVTools
             catch (Exception)
             {
                 // Let the user know what went wrong.
-                //Console.WriteLine("The file could not be read:");
-                //Console.WriteLine(e.Message);
+                //Debug.WriteLine("The file could not be read:");
+                //Debug.WriteLine(e.Message);
             }
             return CSVData;
         }

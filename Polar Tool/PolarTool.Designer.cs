@@ -39,7 +39,6 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.polarChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.polarGrid = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,10 +96,6 @@
             this.polarChart.TabIndex = 3;
             title1.Name = "Polar Graph";
             this.polarChart.Titles.Add(title1);
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // polarGrid
             // 
@@ -510,11 +505,6 @@
         }
 
         #endregion
-
-        //
-        // Dialogs and Graphs
-        //
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.DataGridView polarGrid;
         private System.Windows.Forms.DataVisualization.Charting.Chart polarChart;
 
