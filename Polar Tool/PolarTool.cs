@@ -234,13 +234,9 @@ namespace Polar_Tool
             }
         }
 
-        // show a column of the polarData as series fit to a spline graph
-        private void btnGraphLine_Click(object sender, EventArgs e)
-        {
-        }
 
         //
-        // NOTE:  This code is not currently used.  Save it though.
+        //  Displays the column graph along with the regression for the column passed in e
         //
         private void display_colGraph(object sender, EventArgs e, String btnText)
         {
@@ -256,7 +252,7 @@ namespace Polar_Tool
             chartColGraph.DataSource = null;
             chartColGraph.Series.Clear();
 
-            // declare and allocate the data series.  There is is one for each maximum col of data.
+            // declare and allocate the data series.  There is one for each maximum col of data.
             Series lineSeries;
             lineSeries = new Series();
 
@@ -287,7 +283,10 @@ namespace Polar_Tool
             }
         }
 
-        // Find the maximum value of X in the Series that is passed.  This could be an extension to the Series class.
+        //
+        //  Find the maximum value of X in the Series that is passed.  
+        //  This could be an extension to the Series class.
+        //
         private double FindMaxX(Series s)
         {
             double xmax;
@@ -303,7 +302,10 @@ namespace Polar_Tool
             return (xmax);
         }
 
-        //  Find the maximum value of Y in the Series that is passed.  Could be an extension to the Series class or combined with code above.
+        //
+        //  Find the maximum value of Y in the Series that is passed.  
+        //  Could be an extension to the Series class or combined with code above.
+        //
         private double FindMaxY(Series s)
         {
             double ymax;
@@ -374,20 +376,24 @@ namespace Polar_Tool
             }
         }
 
+        //
         // Use the data in polarData to do a regression along the row specified
+        // This is specific to data along the rows of polarData
+        //
         private double[] polyfitRowGraph(int rowStart, int minspeed, int maxspeed, DataGridViewCellEventArgs e)
         {
             // variables used for regression analysis
-            const int degree = 7;  // the degree of the polynomial.  there are degree+1 results in the result vector due to the constant term.
+            const int degree = 6;  // the degree of the polynomial.  there are degree+1 results in the result vector(p) due to the constant term.
             double[] xarray;
-            xarray = new double[polarData[rowStart].Count];
+            xarray = new double[polarData[rowStart].Count];     // the x values for the regression.
             double[] yarray;
-            yarray = new double[polarData[rowStart].Count];
-            double[] p;
-            double[] r;
+            yarray = new double[polarData[rowStart].Count];     // the y values for the regression.  
+            double[] p;                                         // p is the regression coefficients vector.  It will always have a size of degree + 1
+            double[] r;                                         // the vector used to start the compute the regressed value
 
-            // result array from regression
-            r = new double[maxspeed - minspeed + 1];
+            // this is the regression value array.  It is not the final result vector, which is p.  
+            // the size of the vector is determined by the number of rows in the data.
+            r = new double[maxspeed - minspeed];
 
             // move across polarData getting the data
             // first column is wind angle so skip it.
@@ -408,13 +414,13 @@ namespace Polar_Tool
             p = Fit.Polynomial(xarray, yarray, degree);
 
             // compute the estimated values based on the regression.
-            for (int i = 0; i < maxspeed; i++)
+            for (int i = minspeed; i < maxspeed; i++)
             {
                 r[i] = 0;
                 for (int j = 0; j < degree + 1; j++)
                 {
-                    //Debug.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
                     r[i] += p[j] * Math.Pow(i, j);
+                    //Debug.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
                     //Debug.WriteLine(", r[" + i + "] = " + r[i]);
                 }
                 //Debug.WriteLine("r[" + i + "] = " + r[i]);
@@ -531,17 +537,20 @@ namespace Polar_Tool
         private double[] polyfitColGraph(int rowStart, int minAngle, int maxAngle, DataGridViewCellEventArgs e)
         {
             // variables used for regression analysis
-            const int degree = 7;  // the degree of the polynomial.  there are degree+1 results in the result vector due to the constant term.
+            const int degree = 6;  // the degree of the polynomial.  there are degree+1 results in the result vector due to the constant term.
             double[] xarray;
             xarray = new double[polarData.Count];
             double[] yarray;
             yarray = new double[polarData.Count];
             double[] p;
-            double[] r = new double[maxAngle - minAngle + 1];
+            double[] r = new double[maxAngle - minAngle];
             int rows;
 
-            // wind direction is in column 0 so skip that data
+            // this is regressing wind direction vs boat speed, in other words, we are going down a column of data
+            // wind direction is in column 0, so use that for X.
+            // the wind speed is in row rowStart, so skip that.
             // the two arrays need to be zero based
+            // e.columnindex is 1 less than what we actually need
             for (rows = rowStart + 1; rows < polarData.Count; rows++)
             {
                 // wind angle
@@ -550,11 +559,10 @@ namespace Polar_Tool
                 // boat speed
                 yarray[rows-rowStart-1] = Convert.ToDouble(polarData[rows][e.ColumnIndex + 1]);
 
-                // debug text
                 // Debug.WriteLine("@row = " + rows + ". x = " + xarray[rows] + ". y = " + yarray[rows]);
             }
 
-            // compute the regression and build a series to display it.
+            // compute the regression.  the zero coefficient is the constant.
             p = Fit.Polynomial(xarray, yarray, degree);
 
             // compute the estimated values based on the regression.
@@ -564,8 +572,8 @@ namespace Polar_Tool
                 r[i - minAngle] = 0;
                 for (int j = 0; j < degree + 1; j++)
                 {
-                    //Debug.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
                     r[i - minAngle] += p[j] * Math.Pow(i, j);
+                    //Debug.Write("p[" + j + "] = " + p[j] + ", x[" + i + "] = " + xarray[i]);
                     //Debug.WriteLine(", r[" + i + "] = " + r[i]);
                 }
                 //Debug.WriteLine("r[" + i + "] = " + r[i]);
@@ -643,8 +651,8 @@ namespace Polar_Tool
                 estSeries.Points.AddXY(r[i - minangle], i);
             }
 
-            // make it appear as a line. Spline also works, but will have some discontinuities as Msoft appears to be using
-            // a piecewise spline rather than a Nurb.  NEXT UP - Find a decent NURB library.
+            // make it appear as a line. Spline also works, but will have some discontinuities as Microsoft appears to be using
+            // a piecewise spline rather than a NURB. 
             colSeries.ChartType = SeriesChartType.Line;
             colSeries.Color = Color.FromName("Black");
 
@@ -716,6 +724,9 @@ namespace Polar_Tool
             }
         }
 
+        //
+        // Insert a row of zeros at the rowIndex
+        //
         private void polarDataInsertRow(int rowIndex, String rowLabel)
         {
             List<String> listString = new List<String>();
@@ -741,13 +752,15 @@ namespace Polar_Tool
             cols = polarData[1].Count;
             rows = polarData.Count;
             //Debug.WriteLine("Insert Row @ " + rows + ", " + cols);
-            polarDataPrint(polarData);
+            //polarDataPrint(polarData);
 
             // rebuild the data table.
             buildDataTable(polarData, rows, cols);
         }
 
+        //
         // Remove a row of data
+        //
         private void polarDataDeleteRow(int rowIndex, String rowLabel)
         {
             int rows, cols, count;
@@ -767,7 +780,9 @@ namespace Polar_Tool
             buildDataTable(polarData, rows, cols);
         }
 
+        //
         //  Insert a column of data
+        //
         private void polarDataInsertColumn(int colIndex, String colLabel)
         {
             List<String> listString = new List<String>();
@@ -794,7 +809,9 @@ namespace Polar_Tool
             buildDataTable(polarData, rows, cols);
         }
 
+        //
         // Remove a column of data
+        //
         private void polarDataDeleteColumn(int colIndex, String colLable)
         {
             int rows, cols;
@@ -815,6 +832,9 @@ namespace Polar_Tool
             buildDataTable(polarData, rows, cols);
         }
 
+        //
+        //  Diagnostic to print the polarData array.  Generates a lot of data
+        //
         private void polarDataPrint(List<List<string>> polarData)
         {
             Debug.WriteLine("polarData");
@@ -831,12 +851,23 @@ namespace Polar_Tool
 
         private void polarGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            // build the column graph
-            buildColGraph(sender, e);
-            //build the row graph
-            buildRowGraph(sender, e);
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+            {
+                return;
+            }
+            else
+            {
+                //polarData[e.RowIndex][e.ColumnIndex] = polarGrid[e.ColumnIndex, e.RowIndex].Value.ToString();
+                polarData[e.RowIndex + 1][e.ColumnIndex + 1] = polarGrid[e.ColumnIndex, e.RowIndex].Value.ToString();
+                // build the column graph
+                buildColGraph(sender, e);
+                //build the row graph
+                buildRowGraph(sender, e);
+            }
 
-            //polarData[e.RowIndex][e.ColumnIndex] = polarGrid[e.ColumnIndex, e.RowIndex].Value.ToString();
+
+
+
         }
 
         private void polarGridCellClick(object sender, DataGridViewCellEventArgs e)
